@@ -1,20 +1,34 @@
 "use client";
 
-import { Application, Ticker, DisplayObject, EventSystem } from "pixi.js";
+import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { Button } from "@/components/ui/button";
-import { Plus } from "@phosphor-icons/react";
+import { Plus, CaretRight } from "@phosphor-icons/react";
+import { draggable } from "@/lib/tools/dragging";
+import { Settings } from "./settings";
 
 const setModelPosition = (
   app: Application,
   model: InstanceType<typeof Live2DModel>
 ) => {
-  const scale = (app.renderer.width * 0.75) / model.width;
-  model.scale.set(scale);
-  model.x = app.renderer.width / 2;
-  model.y = app.renderer.height / 2;
+  const scaleX = (app.renderer.width * .4) / model.width;
+  const scaleY = (app.renderer.height * .8) / model.height;
+  model.scale.set(Math.min(scaleX, scaleY));
+  model.x = app.renderer.width / 4;
+  model.y = app.renderer.height / 4;
 };
+
+export interface Live2DConfig {
+  canvas: {
+    bg_color: string;
+    bg_opacity: number;
+  },
+  model: {
+    scale: number;
+    random_motion: boolean;
+  };
+}
 
 export default function Live2D() {
   const canvasContainerRef = useRef<HTMLCanvasElement>(null);
@@ -22,6 +36,17 @@ export default function Live2D() {
   const [model, setModel] = useState<InstanceType<typeof Live2DModel> | null>(
     null
   );
+  
+  const [config, setConfig] = useState<Live2DConfig>({
+    canvas: {
+      bg_color: "#fff",
+      bg_opacity: 0.8
+    },
+    model: {
+      scale: 0.1,
+      random_motion: false
+    }
+  });
 
   const initApp = () => {
     if (!canvasContainerRef.current) return;
@@ -30,9 +55,10 @@ export default function Live2D() {
       width: canvasContainerRef.current.clientWidth,
       height: canvasContainerRef.current.clientHeight,
       view: canvasContainerRef.current,
-      backgroundAlpha: 0.3,
+      backgroundAlpha: 0.8,
+      backgroundColor: "#fff",
       antialias: true,
-      resizeTo: window
+      resolution: 2
     });
 
     setApp(app);
@@ -50,6 +76,8 @@ export default function Live2D() {
 
       currentApp.stage.addChild(model as unknown as DisplayObject);
 
+      draggable(model);
+
       model.anchor.set(.5, .5);
       setModelPosition(currentApp, model);
 
@@ -59,9 +87,8 @@ export default function Live2D() {
         }
       });
 
-      
-
       setModel(model);
+
     } catch (error) {
       console.error("Failed to load Live2D model:", error);
     }
@@ -77,10 +104,9 @@ export default function Live2D() {
         canvasContainerRef.current.clientWidth,
         canvasContainerRef.current.clientHeight
       );
-      console.log(`Client size: ${canvasContainerRef.current.clientWidth}, ${canvasContainerRef.current.clientHeight}`);
-
       setModelPosition(app, model);
     };
+
     window.addEventListener("resize", onResize);
 
     return () => {
@@ -89,15 +115,37 @@ export default function Live2D() {
   }, [app, model]);
 
   useEffect(() => {
+    if (!app || !model) return;
+
+    app.renderer.background.color = config.canvas.bg_color;
+    app.renderer.background.alpha = config.canvas.bg_opacity;
+    model.scale.set(config.model.scale);
+    model.motion(config.model.random_motion ? "random" : "idle");
+
+
+    const controls = document.querySelector(".live2d-controls");
+    if (controls) {
+      controls.innerHTML = `
+        <div className="flex flex-row>
+          <p>Motion Groups</p>
+          <div className="flex flex-row gap-2 items-center justify-start">
+            
+          </div>
+        </div>
+      `
+    }
+
+  }, [config, app, model]);
+
+  useEffect(() => {
     initApp();
   }, []);
 
   return (
-      <div className="max-w-7xl w-full h-[1024px] bg-accent relative">
-        <div className="absolute top-2 left-2 bg-transparent z-10">
-          <Button variant="ghost" size="icon" className="h-12 w-12 bg-pink-200 hover:bg-pink-300 rounded-full hover:rotate-90 transition-transform duration-500">
-            <Plus size={32} weight="bold" />
-          </Button>
+      <div className="max-w-5xl w-full h-[768px] bg-accent relative">
+        <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
+          <Settings config={config} setConfig={setConfig} />
+          <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
         </div>
         <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
       </div>
