@@ -1,5 +1,6 @@
 // import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 
+
 // export interface DraggableLive2DModel extends Live2DModel {
 //     dragging: boolean;
 //     _pointerX: number;

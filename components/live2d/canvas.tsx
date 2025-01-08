@@ -1,17 +1,19 @@
 "use client";
 
-import { Application, Ticker, DisplayObject } from "pixi.js";
+import { Application, Ticker, DisplayObject, EventSystem } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
+import { Button } from "@/components/ui/button";
+import { Plus } from "@phosphor-icons/react";
 
 const setModelPosition = (
   app: Application,
   model: InstanceType<typeof Live2DModel>
 ) => {
-  const scale = (app.renderer.width * 1) / model.width;
+  const scale = (app.renderer.width * 0.75) / model.width;
   model.scale.set(scale);
   model.x = app.renderer.width / 2;
-  model.y = app.renderer.height / 1.5;
+  model.y = app.renderer.height / 2;
 };
 
 export default function Live2D() {
@@ -28,8 +30,9 @@ export default function Live2D() {
       width: canvasContainerRef.current.clientWidth,
       height: canvasContainerRef.current.clientHeight,
       view: canvasContainerRef.current,
-      backgroundAlpha: 0,
+      backgroundAlpha: 0.3,
       antialias: true,
+      resizeTo: window
     });
 
     setApp(app);
@@ -47,14 +50,16 @@ export default function Live2D() {
 
       currentApp.stage.addChild(model as unknown as DisplayObject);
 
-      model.anchor.set(.5, .8);
+      model.anchor.set(.5, .5);
       setModelPosition(currentApp, model);
 
       model.on("hit", (hitAreas) => {
-        if (hitAreas.includes("Body")) {
-          model.motion("Tap@Body");
+        if (hitAreas.includes("*")) {
+          model.motion("");
         }
       });
+
+      
 
       setModel(model);
     } catch (error) {
@@ -63,7 +68,7 @@ export default function Live2D() {
   };
 
   useEffect(() => {
-    if (!app || !model) return;
+    if (!app || !model ) return;
 
     const onResize = () => {
       if (!canvasContainerRef.current) return;
@@ -72,6 +77,7 @@ export default function Live2D() {
         canvasContainerRef.current.clientWidth,
         canvasContainerRef.current.clientHeight
       );
+      console.log(`Client size: ${canvasContainerRef.current.clientWidth}, ${canvasContainerRef.current.clientHeight}`);
 
       setModelPosition(app, model);
     };
@@ -86,5 +92,14 @@ export default function Live2D() {
     initApp();
   }, []);
 
-  return <canvas ref={canvasContainerRef} className="max-w-[1024px] w-full h-[1024px]" />;
+  return (
+      <div className="max-w-7xl w-full h-[1024px] bg-accent relative">
+        <div className="absolute top-2 left-2 bg-transparent z-10">
+          <Button variant="ghost" size="icon" className="h-12 w-12 bg-pink-200 hover:bg-pink-300 rounded-full hover:rotate-90 transition-transform duration-500">
+            <Plus size={32} weight="bold" />
+          </Button>
+        </div>
+        <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
+      </div>
+  )
 }
