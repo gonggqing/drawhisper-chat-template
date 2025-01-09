@@ -2,11 +2,15 @@
 
 import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
-import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
-import { Button } from "@/components/ui/button";
-import { Plus, CaretRight } from "@phosphor-icons/react";
+import { Live2DModel, MotionPriority } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { draggable } from "@/lib/tools/dragging";
 import { Settings } from "./settings";
+
+import { MotionGroupEntry, ExpressionEntry } from "./character-manager";
+
+import { loadedModelConfig } from "@/lib/tools/load-model";
+import { startMotion } from "@/lib/tools/model-control";
+import { CharacterMotionManagerProps as ModelConfig } from "./character-manager";
 
 const setModelPosition = (
   app: Application,
@@ -36,6 +40,8 @@ export default function Live2D() {
   const [model, setModel] = useState<InstanceType<typeof Live2DModel> | null>(
     null
   );
+
+  const [modelConfig, setModelConfig] = useState<ModelConfig>();
   
   const [config, setConfig] = useState<Live2DConfig>({
     canvas: {
@@ -122,19 +128,13 @@ export default function Live2D() {
     model.scale.set(config.model.scale);
     model.motion(config.model.random_motion ? "random" : "idle");
 
+    const { motionGroups, expressions } = loadedModelConfig(model);
 
-    const controls = document.querySelector(".live2d-controls");
-    if (controls) {
-      controls.innerHTML = `
-        <div className="flex flex-row>
-          <p>Motion Groups</p>
-          <div className="flex flex-row gap-2 items-center justify-start">
-            
-          </div>
-        </div>
-      `
-    }
-
+    setModelConfig({
+      model,
+      motionGroups,
+      expressions
+    });
   }, [config, app, model]);
 
   useEffect(() => {
@@ -144,10 +144,15 @@ export default function Live2D() {
   return (
       <div className="max-w-5xl w-full h-[768px] bg-accent relative">
         <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
-          <Settings config={config} setConfig={setConfig} />
+          <Settings 
+            config={config} 
+            setConfig={setConfig} 
+            modelConfig={modelConfig} 
+          />
           <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
         </div>
         <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
       </div>
   )
 }
+
