@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, X, CaretRight, Palette, PersonSimple, PersonSimpleWalk, CaretLeft } from "@phosphor-icons/react";
+import { Plus, X, CaretRight, Palette, Headset, UserSwitch } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { 
     DropdownMenu, 
@@ -22,17 +22,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ColorPicker, useColor, IColor } from "react-color-palette";
 import "react-color-palette/css";
 
-import { Live2DConfig } from "./canvas";
+import { CanvasConfig } from "./canvas";
 import { CharacterMotionManager, CharacterMotionManagerProps as ModelConfig } from "./character-manager";
 import { setDefaultMotion, startRandomMotion } from "@/lib/tools/model-control";
+import { Live2DController } from "@/components/live2d/controller";
+
+import { ModelContext } from "@/types/model";
+import { SwitchModel } from "@/components/live2d/switch-model";
 
 
-export function Settings({ config, setConfig, modelConfig }: { config: Live2DConfig, setConfig: (config: Live2DConfig) => void, modelConfig: ModelConfig | undefined }) {
+export function Settings({ config, setConfig, context }: { config: CanvasConfig, setConfig: (config: CanvasConfig) => void, context: ModelContext | null }) {
 
     const [open, setOpen] = useState(false);
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
     const [color, setColor] = useColor(config.canvas.bg_color);
-    const [randomMotion, setRandomMotion] = useState(config.model.random_motion);
     const [expanded, setExpanded] = useState(true);
 
     const handleColorChange = (newColor: IColor) => {
@@ -53,27 +56,6 @@ export function Settings({ config, setConfig, modelConfig }: { config: Live2DCon
                 bg_opacity: value
             }
         })
-    }
-
-    const handleScaleChange = (value: number) => {
-        setConfig({
-            ...config,
-            model: {
-                ...config.model,
-                scale: value
-            }
-        })
-    }
-
-    const handleRandomMotion = () => {
-        if (!modelConfig) return;
-        if (!randomMotion) {
-            setRandomMotion(true);
-            startRandomMotion(modelConfig.model, modelConfig.motionGroups);
-        } else {
-            setRandomMotion(false);
-            setDefaultMotion(modelConfig.model);
-        }
     }
 
     return (
@@ -111,30 +93,9 @@ export function Settings({ config, setConfig, modelConfig }: { config: Live2DCon
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel className="text-base text-muted-foreground">Character</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">
-                                <div className="flex flex-col gap-2 items-start justify-start">
-                                    <p className="text-sm font-mono text-muted-foreground">Scale</p>
-                                    <div className="flex flex-row gap-2 items-center justify-between">
-                                        <Slider 
-                                            className="w-52" 
-                                            max={2} 
-                                            min={0.01} 
-                                            defaultValue={[config.model.scale]} 
-                                            step={0.01} 
-                                            onValueChange={(value) => {
-                                                handleScaleChange(value[0])
-                                            }} 
-                                        />
-                                        <p className="text-sm font-mono text-muted-foreground">{config.model.scale}</p>
-                                    </div>
-                                </div>
-                            </DropdownMenuItem>
-                            {modelConfig && (
-                                <CharacterMotionManager model={modelConfig.model} motionGroups={modelConfig.motionGroups} expressions={modelConfig.expressions} />
-                            )}
-                        </DropdownMenuGroup>
+                        {context && context.model && (
+                            <Live2DController model={context.model} />
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <AnimatePresence mode="popLayout">
@@ -160,20 +121,9 @@ export function Settings({ config, setConfig, modelConfig }: { config: Live2DCon
                                 >
                                 <Palette size={24} weight="fill" />
                             </Button>
-                            {
-                                modelConfig && (
-                                    <Button variant="ghost" size="icon" 
-                                        key="random-motion"
-                                        className={cn(
-                                            "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
-                                            randomMotion && "bg-[color:#d7e3fc]"
-                                        )}
-                                        onClick={handleRandomMotion}
-                                        >
-                                        { randomMotion ? <PersonSimpleWalk size={24} weight="fill" /> : <PersonSimple size={24} weight="fill" /> }
-                                    </Button>
-                                )
-                            }
+                            {context && (
+                                <SwitchModel context={context} />
+                            )}
                         </motion.div>
                     )}
                     <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500"

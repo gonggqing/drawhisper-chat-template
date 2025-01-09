@@ -1,16 +1,13 @@
 "use client";
-
+import axios from "axios";
 import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Live2DModel, MotionPriority } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { draggable } from "@/lib/tools/dragging";
 import { Settings } from "./settings";
 
-import { MotionGroupEntry, ExpressionEntry } from "./character-manager";
-
-import { loadedModelConfig } from "@/lib/tools/load-model";
-import { startMotion } from "@/lib/tools/model-control";
-import { CharacterMotionManagerProps as ModelConfig } from "./character-manager";
+import { ModelFile } from "@/lib/tools/list-files";
+import { ModelContext } from "@/types/model";
 
 const setModelPosition = (
   app: Application,
@@ -23,15 +20,11 @@ const setModelPosition = (
   model.y = app.renderer.height / 4;
 };
 
-export interface Live2DConfig {
+export interface CanvasConfig {
   canvas: {
     bg_color: string;
     bg_opacity: number;
-  },
-  model: {
-    scale: number;
-    random_motion: boolean;
-  };
+  }
 }
 
 export default function Live2D() {
@@ -41,16 +34,17 @@ export default function Live2D() {
     null
   );
 
-  const [modelConfig, setModelConfig] = useState<ModelConfig>();
-  
-  const [config, setConfig] = useState<Live2DConfig>({
+  const [context, setContext] = useState<ModelContext | null>(null);
+
+  const [models, setModels] = useState<ModelFile[]>([]);
+  const [modelLoading, setModelLoading] = useState(true);
+  const [modelError, setModelError] = useState<string>();
+  const [currentModel, setCurrentModel] = useState<ModelFile | null>(null);
+
+  const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
       bg_color: "#fff",
       bg_opacity: 0.8
-    },
-    model: {
-      scale: 0.1,
-      random_motion: false
     }
   });
 
@@ -68,15 +62,14 @@ export default function Live2D() {
     });
 
     setApp(app);
-    initLive2D(app);
   };
 
-  const initLive2D = async (currentApp: Application) => {
+  const initLive2D = async (currentApp: Application, modelPath: string) => {
     if (!canvasContainerRef.current) return;
 
     try {
       const model = await Live2DModel.from(
-        "/live2d/dafeng_3/dafeng_3.model3.json",
+        modelPath,
         { ticker: Ticker.shared }
       );
 
@@ -88,8 +81,8 @@ export default function Live2D() {
       setModelPosition(currentApp, model);
 
       model.on("hit", (hitAreas) => {
-        if (hitAreas.includes("*")) {
-          model.motion("");
+        if (hitAreas.includes("")) {
+          model.motion("idle");
         }
       });
 
@@ -97,9 +90,11 @@ export default function Live2D() {
 
     } catch (error) {
       console.error("Failed to load Live2D model:", error);
+      setModelError(`Failed to load model: ${modelPath}`);
     }
   };
 
+  // adjust canvas size when window is resized
   useEffect(() => {
     if (!app || !model ) return;
 
@@ -120,23 +115,69 @@ export default function Live2D() {
     };
   }, [app, model]);
 
+  // adjust canvas
   useEffect(() => {
     if (!app || !model) return;
 
     app.renderer.background.color = config.canvas.bg_color;
     app.renderer.background.alpha = config.canvas.bg_opacity;
-    model.scale.set(config.model.scale);
-    model.motion(config.model.random_motion ? "random" : "idle");
 
-    const { motionGroups, expressions } = loadedModelConfig(model);
-
-    setModelConfig({
-      model,
-      motionGroups,
-      expressions
-    });
   }, [config, app, model]);
 
+  // fetch the model list and initialize live2d model
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        setModelLoading(true);
+        const response = await axios.get<ModelFile[]>("/api/files");
+        
+        if (response.data.length === 0) {
+          setModelError("No Live2D models found");
+          return;
+        }
+        setModels(response.data);
+        
+        // If no model is currently loaded and we have the app instance
+        if (!model && app && response.data.length > 0) {
+          await initLive2D(app, response.data[0].path);
+          setCurrentModel(response.data[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch model files:", error);
+        setModelError("Failed to load model list");
+      } finally {
+        setModelLoading(false);
+      }
+    }
+
+    if (app) {
+      fetchModels();
+    }
+  }, [app]);
+
+  // set context for settings and model-switch components
+  useEffect(() => {
+    if (!model || !app || !currentModel || !models) return;
+
+    setContext({
+      files: models,
+      current: currentModel,
+      model: model,
+      isLoading: modelLoading,
+      error: modelError,
+      setModel: setModel,
+      setCurrent: setCurrentModel,
+    })
+  }, [app, model, currentModel, models])
+
+  // remove old model and set new model
+  useEffect(() => {
+    if (!model || !app || !currentModel || !models) return;
+    app.stage.removeChild(model);
+    initLive2D(app, currentModel.path);
+  }, [currentModel])
+
+  // initialize app
   useEffect(() => {
     initApp();
   }, []);
@@ -147,7 +188,7 @@ export default function Live2D() {
           <Settings 
             config={config} 
             setConfig={setConfig} 
-            modelConfig={modelConfig} 
+            context={context}
           />
           <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
         </div>

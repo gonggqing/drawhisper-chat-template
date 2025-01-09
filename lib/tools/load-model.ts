@@ -23,15 +23,11 @@ export function loadedModelConfig(model: InstanceType<typeof Live2DModel>): {
         })) || []
       });
     };
-  
-    console.log(`motionGroups: ${JSON.stringify(motionGroups)}`);
-    
+      
     expressions = expressionDefinitions?.map((expression, index) => ({
       file: expression.file || expression.File || "",
       error: expressionManager?.expressions[index]! === null ? "Failed to load" : undefined
     })) || [];
-    
-    console.log(`expressions: ${JSON.stringify(expressions)}`);
-  
+      
     return { motionGroups, expressions };
   }

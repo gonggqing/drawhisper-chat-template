@@ -9,12 +9,11 @@ export function startRandomMotion(model: InstanceType<typeof Live2DModel>, motio
     const randomGroup = motionGroups[Math.floor(Math.random() * motionGroups.length)];
     if (!randomGroup) return;
 
-    model.internalModel.motionManager.startRandomMotion(randomGroup.name, MotionPriority.NORMAL, {
+    model.internalModel.motionManager.startRandomMotion(randomGroup.name, MotionPriority.FORCE, {
         onFinish: () => {
-            startRandomMotion(model, motionGroups);
+            console.log(`Random motion finished: ${model.internalModel.motionManager.state.reservedIndex}`);
         }
     });
-    console.log(`Starting random motion: ${model.internalModel.motionManager.state.reservedIndex}`);
 }
 
 export function setDefaultMotion(model: InstanceType<typeof Live2DModel>) {

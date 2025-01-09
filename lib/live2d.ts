@@ -1,8 +1,8 @@
 import { Live2DModel, MotionManager, ExpressionManager, MotionState, MotionPriority } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { MotionGroupEntry, ExpressionEntry } from "@/components/live2d/character-manager";
 
-export class Live2DModelManager {
-    private static _instance: Live2DModelManager;
+export class CreateLive2DController {
+    private static _instance: CreateLive2DController;
     
     private model: InstanceType<typeof Live2DModel>;
     private motionManager: MotionManager;
@@ -16,7 +16,7 @@ export class Live2DModelManager {
     public expressionEntry: ExpressionEntry[] = [];
 
     constructor(model: InstanceType<typeof Live2DModel>) {
-        Live2DModelManager._instance = this;
+        CreateLive2DController._instance = this;
         
         this.model = model;
         this.motionManager = model.internalModel.motionManager;
@@ -40,9 +40,9 @@ export class Live2DModelManager {
         this.expressionEntry = this.expressions();
     }
 
-    public static get instance(): Live2DModelManager {
+    public static get instance(): CreateLive2DController {
         if (!this._instance) {
-            throw new Error('Live2DModelManager has not been initialized');
+            throw new Error('Live2DController has not been initialized');
         }
         return this._instance;
     }
@@ -97,6 +97,32 @@ export class Live2DModelManager {
 
     public expressionReserved(index: number) {
         this.pendingExpressionIndex = index;
+    }
+
+    public setScale(scale: number) {
+        this.model.scale.set(scale);
+    }
+
+    public setRotation(rotation: number) {
+        this.model.rotation = rotation;
+    }
+
+    public currentState() {
+        return this.motionState;
+    }
+
+    public speak(audio: string, expression?: string) {
+        this.model.speak(audio, {
+            volume: 1,
+            resetExpression: true,
+            expression: expression || undefined,
+            onFinish: () => {
+                console.log("Speech finished");
+            },
+            onError: (error) => {
+                console.error(error);
+            }
+        });
     }
 
     public _model() {
