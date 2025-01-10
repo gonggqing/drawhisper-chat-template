@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { SwitchModelProps } from "@/types/model";
 import { cn } from "@/lib/utils";
 import { ModelFile } from "@/lib/tools/list-files";
-export function SwitchModel({ context }: SwitchModelProps) {
+export function SwitchModelButton({ context }: SwitchModelProps) {
     const { 
         files, 
         current, 

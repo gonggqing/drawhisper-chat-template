@@ -26,7 +26,8 @@ import { CanvasConfig } from "../canvas";
 import { Live2DController } from "@/components/live2d/utils/controller";
 
 import { ModelContext } from "@/types/model";
-import { SwitchModel } from "@/components/live2d/utils/switch-model";
+import { SwitchModelButton } from "@/components/live2d/utils/switch-model";
+import { VoiceButton } from "@/components/live2d/utils/voice";
 
 
 export function Settings({ config, setConfig, context }: { config: CanvasConfig, setConfig: (config: CanvasConfig) => void, context: ModelContext | null }) {
@@ -129,8 +130,9 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                                 <Palette size={24} weight="fill" />
                             </Button>
                             {context && (
-                                <SwitchModel context={context} />
+                                <SwitchModelButton context={context} />
                             )}
+                            <VoiceButton />
                         </motion.div>
                     )}
                     <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500"

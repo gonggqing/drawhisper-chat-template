@@ -110,18 +110,28 @@ export class CreateLive2DController {
     public currentState() {
         return this.motionState;
     }
-
-    public speak(audio: string, expression?: string) {
-        this.model.speak(audio, {
-            volume: 1,
-            resetExpression: true,
+    /**
+     * 
+     * @param sound - url to file or base64
+     * @param expression 
+     * @param volume - 0 to 1 
+     * @param onFinish 
+     * @param onError 
+     */
+    public speak(
+        sound: string, 
+        expression?: string, 
+        resetExpression?: boolean,
+        volume?: number,
+        onFinish?: () => void,
+        onError?: (error: any) => void
+    ) {
+        this.model.speak(sound, {
+            volume: volume || 1,
+            resetExpression: resetExpression || undefined,
             expression: expression || undefined,
-            onFinish: () => {
-                console.log("Speech finished");
-            },
-            onError: (error) => {
-                console.error(error);
-            }
+            onFinish: onFinish || undefined,
+            onError: onError || undefined
         });
     }
 
