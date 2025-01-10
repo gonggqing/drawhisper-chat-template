@@ -11,7 +11,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { PersonSimple, PersonSimpleWalk } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, PersonSimpleWalk } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 
@@ -25,6 +25,7 @@ export function Live2DController({ model }: Live2DControllerProps) {
     const [expressions, setExpressions] = useState<ExpressionEntry[]>([]);
     const [randomMotion, setRandomMotion] = useState(false);
     const [scale, setScale] = useState(model.scale.x);
+    const [rotation, setRotation] = useState(model.rotation);
 
     useEffect(() => {
         if (!model) return;
@@ -64,6 +65,22 @@ export function Live2DController({ model }: Live2DControllerProps) {
         controller.setScale(value);
     };
 
+    const handleRotationChange = (value: number) => {
+        if (!controller) return;
+        setRotation(value);
+        controller.setRotation(value);
+    };
+
+    const handleReset = () => {
+        if (!controller) return;
+        controller.setScale(0.1);
+        controller.setRotation(0);
+        controller.startMotion(motionGroups[0], 0);
+        setScale(0.1);
+        setRotation(0);
+        setRandomMotion(false);
+    }
+
     return (
         <>
             <DropdownMenuGroup>
@@ -86,6 +103,24 @@ export function Live2DController({ model }: Live2DControllerProps) {
                         </div>
                     </div>
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">
+                    <div className="flex flex-col gap-2 items-start justify-start">
+                        <p className="text-sm font-mono text-muted-foreground">Rotation</p>
+                        <div className="flex flex-row gap-2 items-center justify-between">
+                            <Slider 
+                                className="w-52" 
+                                max={Math.PI * 2} 
+                                min={0} 
+                                defaultValue={[rotation]} 
+                                step={0.01} 
+                                onValueChange={(value) => {
+                                    handleRotationChange(value[0])
+                                }} 
+                            />
+                            <p className="text-sm font-mono text-muted-foreground">{rotation}</p>
+                        </div>
+                    </div>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-[color:#edf2fb]">
                     <span className="text-sm font-mono text-muted-foreground">Random Motion</span>
                     <Button variant="ghost" size="icon" 
@@ -95,6 +130,17 @@ export function Live2DController({ model }: Live2DControllerProps) {
                         onClick={handleRandomMotion}
                     >
                          <PersonSimpleWalk size={24} weight="fill" />
+                    </Button>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-[color:#edf2fb]">
+                    <span className="text-sm font-mono text-muted-foreground">Reset</span>
+                    <Button variant="ghost" size="icon" 
+                        className={cn(
+                            "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
+                        )}
+                        onClick={handleReset}
+                    >
+                         <ArrowCounterClockwise size={24} weight="fill" />
                     </Button>
                 </DropdownMenuItem>
             <DropdownMenuSeparator />

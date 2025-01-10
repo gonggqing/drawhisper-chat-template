@@ -23,8 +23,6 @@ import { ColorPicker, useColor, IColor } from "react-color-palette";
 import "react-color-palette/css";
 
 import { CanvasConfig } from "./canvas";
-import { CharacterMotionManager, CharacterMotionManagerProps as ModelConfig } from "./character-manager";
-import { setDefaultMotion, startRandomMotion } from "@/lib/tools/model-control";
 import { Live2DController } from "@/components/live2d/controller";
 
 import { ModelContext } from "@/types/model";
@@ -54,6 +52,15 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
             canvas: {
                 ...config.canvas,
                 bg_opacity: value
+            }
+        })
+    }
+
+    const handleReset = () => {
+        setConfig({
+            canvas: {
+                bg_opacity: 0.8,
+                bg_color: "#fff"
             }
         })
     }
