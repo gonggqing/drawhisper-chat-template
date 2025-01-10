@@ -8,6 +8,8 @@ import { Settings } from "./setting/settings";
 
 import { ModelFile } from "@/lib/tools/list-files";
 import { ModelContext } from "@/types/model";
+import { Live2DProvider } from "@/context/live2d/live2d-provider";
+import { CreateLive2DController } from "@/lib/live2d";
 
 const setModelPosition = (
   app: Application,
@@ -40,6 +42,7 @@ export default function Live2D() {
   const [modelLoading, setModelLoading] = useState(true);
   const [modelError, setModelError] = useState<string>();
   const [currentModel, setCurrentModel] = useState<ModelFile | null>(null);
+  const [controller, setController] = useState<CreateLive2DController | null>(null);
 
   const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
@@ -87,6 +90,7 @@ export default function Live2D() {
       });
 
       setModel(model);
+      setController(new CreateLive2DController(model));
 
     } catch (error) {
       console.error("Failed to load Live2D model:", error);
@@ -183,16 +187,18 @@ export default function Live2D() {
   }, []);
 
   return (
-      <div className="max-w-5xl w-full h-[768px] bg-accent relative">
-        <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
-          <Settings 
-            config={config} 
-            setConfig={setConfig} 
-            context={context}
-          />
-          <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
+      <Live2DProvider data={{ controller }}>
+        <div className="max-w-5xl w-full h-[768px] bg-accent relative">
+          <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
+            <Settings 
+              config={config} 
+              setConfig={setConfig} 
+              context={context}
+            />
+            <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
+          </div>
+          <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
         </div>
-        <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
-      </div>
+      </Live2DProvider>
   )
 }

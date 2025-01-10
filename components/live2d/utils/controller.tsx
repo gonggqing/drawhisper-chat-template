@@ -14,27 +14,28 @@ import {
 import { ArrowCounterClockwise, PersonSimpleWalk } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
+import { useContext } from "react";
+import { Live2DContext } from "@/context/live2d/live2d-context";
 
 interface Live2DControllerProps {
     model: InstanceType<typeof Live2DModel>;
 }
 
 export function Live2DController({ model }: Live2DControllerProps) {
-    const [controller, setController] = useState<CreateLive2DController>();
+    // model basic
+    const { controller } = useContext(Live2DContext);
     const [motionGroups, setMotionGroups] = useState<MotionGroupEntry[]>([]);
     const [expressions, setExpressions] = useState<ExpressionEntry[]>([]);
+    // model control
     const [randomMotion, setRandomMotion] = useState(false);
     const [scale, setScale] = useState(model.scale.x);
     const [rotation, setRotation] = useState(model.rotation);
 
     useEffect(() => {
-        if (!model) return;
-        
-        const controller = new CreateLive2DController(model);
-        setController(controller);
+        if (!controller) return;
         setMotionGroups(controller.motionGroups);
         setExpressions(controller.expressionEntry);
-    }, [model]);
+    }, [controller]);
 
     const handleRandomMotion = () => {
         if (!controller) return;

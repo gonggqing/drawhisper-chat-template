@@ -23,10 +23,10 @@ import { ColorPicker, useColor, IColor } from "react-color-palette";
 import "react-color-palette/css";
 
 import { CanvasConfig } from "../canvas";
-import { Live2DController } from "@/components/live2d/setting/controller";
+import { Live2DController } from "@/components/live2d/utils/controller";
 
 import { ModelContext } from "@/types/model";
-import { SwitchModel } from "@/components/live2d/setting/switch-model";
+import { SwitchModel } from "@/components/live2d/utils/switch-model";
 
 
 export function Settings({ config, setConfig, context }: { config: CanvasConfig, setConfig: (config: CanvasConfig) => void, context: ModelContext | null }) {
