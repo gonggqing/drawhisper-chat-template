@@ -1,48 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { loadVoices } from '@/lib/tools/load-voice';
+import path from 'path';
+import { z } from 'zod';
 
-/**
- * Load voice files from local directory or remote URL
- * const response = await fetch('/api/voices?path=character/idle&createUrls=true');
- * const { data: voices } = await response.json();
- */
-export async function GET(request: NextRequest) {
+// Schema for POST request body
+const voiceRequestSchema = z.object({
+    url: z.string().url()
+});
+
+// GET: List local voices from public/voices
+export async function GET(): Promise<NextResponse> {
     try {
-        // Get path from query params
-        const searchParams = request.nextUrl.searchParams;
-        const path = searchParams.get('path');
-        const createUrls = searchParams.get('createUrls') === 'true';
+        // Log the current working directory and voices path for debugging
+        const cwd = process.cwd();
+        const voicesPath = path.join(cwd, 'public', 'voices');
 
-        if (!path) {
-            return NextResponse.json(
-                { error: 'Path parameter is required' },
-                { status: 400 }
-            );
-        }
+        console.log('Current working directory:', cwd);
+        console.log('Voices path:', voicesPath);
 
-        // Load voice files
-        const voices = await loadVoices(path, { createUrls });
+        // Load voice files with URLs by default
+        const voices = await loadVoices(voicesPath, { createUrls: true });
 
         if (!voices.length) {
-            return NextResponse.json(
-                { error: 'No voice files found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ 
+                message: "No voices found", 
+                debug: { 
+                    cwd, 
+                    voicesPath 
+                } 
+            }, { status: 404 });
+        }
+
+        return NextResponse.json(voices);
+    } catch (error) {
+        console.error('Error loading voice files:', error);
+        return NextResponse.json({ 
+            error: "Failed to load voices",
+            details: error instanceof Error ? error.message : String(error)
+        }, { status: 500 });
+    }
+}
+
+// POST: Load a remote voice file
+export async function POST(request: NextRequest): Promise<NextResponse> {
+    try {
+        const body = await request.json();
+        const { url } = voiceRequestSchema.parse(body);
+
+        console.log('Loading remote voice from:', url);
+
+        // Load remote voice file with URL
+        const voices = await loadVoices(url, { createUrls: true });
+
+        if (!voices.length) {
+            return NextResponse.json({ 
+                message: "Failed to load remote voice", 
+                debug: { url } 
+            }, { status: 404 });
         }
 
         return NextResponse.json({
-            success: true,
-            data: voices
+            data: voices[0] // Return single voice file for remote URL
         });
-
     } catch (error) {
-        console.error('Error loading voice files:', error);
-        return NextResponse.json(
-            { 
-                error: 'Failed to load voice files',
-                details: error instanceof Error ? error.message : 'Unknown error'
-            },
-            { status: 500 }
-        );
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ 
+                error: "Invalid request body",
+                details: error.errors 
+            }, { status: 400 });
+        }
+
+        console.error('Error loading remote voice:', error);
+        return NextResponse.json({ 
+            error: "Failed to load remote voice",
+            details: error instanceof Error ? error.message : String(error)
+        }, { status: 500 });
     }
 }

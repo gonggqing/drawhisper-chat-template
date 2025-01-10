@@ -5,7 +5,7 @@ import { promisify } from 'util';
 const readFile = promisify(fs.readFile);
 const readdir = promisify(fs.readdir);
 
-interface VoiceFile {
+export interface VoiceFile {
     name: string;
     base64: string;
     url?: string;
@@ -54,10 +54,10 @@ export async function loadVoices(
         return [voiceFile];
     }
 
-    // Handle local files
+    // Handle local files default
     const voicesPath = process.env.NODE_ENV === 'production' 
-        ? path.join(process.cwd(), 'public', 'voices', source)
-        : path.join(process.cwd(), 'public', 'voices', source);
+        ? path.join(process.cwd(), 'public', 'voices')
+        : path.join(process.cwd(), 'public', 'voices');
 
     try {
         const files = await readdir(voicesPath);

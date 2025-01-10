@@ -113,14 +113,14 @@ export class CreateLive2DController {
     /**
      * 
      * @param sound - url to file or base64
-     * @param expression 
+     * @param expression - index or name
      * @param volume - 0 to 1 
      * @param onFinish 
      * @param onError 
      */
     public speak(
         sound: string, 
-        expression?: string, 
+        expression?: number | string, 
         resetExpression?: boolean,
         volume?: number,
         onFinish?: () => void,
