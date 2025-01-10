@@ -50,7 +50,7 @@ export function SwitchModelButton({ context }: SwitchModelProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded">
-                <DropdownMenuLabel className="text-base text-muted-foreground">Change</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-base text-muted-foreground">Character</DropdownMenuLabel>
                 {files.map((file) => (
                     <DropdownMenuItem
                         key={file.path}

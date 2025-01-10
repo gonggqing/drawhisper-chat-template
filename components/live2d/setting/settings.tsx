@@ -69,7 +69,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
     return (
         <div className="flex flex-col gap-2 items-start justify-start">
             <div className="flex flex-row gap-2 items-center justify-start">
-                <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
+                <DropdownMenu open={open} onOpenChange={setOpen}>
                     <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className={cn(
                         "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#e2eafc] transition-all rounded-full duration-500",
@@ -106,45 +106,48 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <AnimatePresence mode="popLayout">
-                    { expanded && (
-                        <motion.div 
-                            className="flex flex-row gap-2 items-center justify-start"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
-                            key="settings-container"
-                        >
-                            <Button variant="ghost" size="icon" 
-                                key="color-picker"
-                                className={cn(
-                                    "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
-                                    colorPickerOpen && "bg-[color:#d7e3fc]"
-                                )}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setColorPickerOpen(!colorPickerOpen);
-                                }}
-                                >
-                                <Palette size={24} weight="fill" />
-                            </Button>
-                            {context && (
-                                <SwitchModelButton context={context} />
-                            )}
-                            <VoiceButton />
-                        </motion.div>
-                    )}
-                    <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500"
-                        key="expand-settings"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setExpanded(!expanded);
-                        }}
+                <div className={cn(
+                    "flex flex-row gap-2 items-center justify-start",
+                    !expanded && "hidden"
+                )}>
+                    <motion.div 
+                        className="flex flex-row gap-2 items-center justify-start"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: expanded ? 1 : 0, scale: expanded ? 1 : 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        key="settings-container"
                     >
-                        {expanded ? <X size={24} weight="bold" /> : <Plus size={24} weight="bold" />}
-                    </Button>
-                </AnimatePresence>
+                        <Button variant="ghost" size="icon" 
+                            key="color-picker"
+                            className={cn(
+                                "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
+                                colorPickerOpen && "bg-[color:#d7e3fc]"
+                            )}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setColorPickerOpen(!colorPickerOpen);
+                            }}
+                        >
+                            <Palette size={24} weight="fill" />
+                        </Button>
+                        {context && (
+                            <SwitchModelButton context={context} />
+                        )}
+                        <VoiceButton />
+                    </motion.div>
+                </div>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500"
+                    key="expand-settings"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setExpanded(!expanded);
+                    }}
+                >
+                    <Plus size={24} weight="bold" className={cn("transition-transform duration-300", expanded && "rotate-45")} />
+                </Button>
             </div>
             <div className="relative w-[384px] h-[448px] bg-transparent z-10">
                 {
