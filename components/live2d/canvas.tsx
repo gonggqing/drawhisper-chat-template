@@ -10,6 +10,7 @@ import { ModelFile } from "@/lib/tools/list-files";
 import { ModelContext } from "@/types/model";
 import { Live2DProvider } from "@/context/live2d/live2d-provider";
 import { CreateLive2DController } from "@/lib/live2d";
+import { ChatContainer } from "@/components/chat/chat-container";
 
 const setModelPosition = (
   app: Application,
@@ -188,16 +189,21 @@ export default function Live2D() {
 
   return (
       <Live2DProvider data={{ controller }}>
-        <div className="max-w-5xl w-full h-[768px] bg-accent relative">
-          <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
-            <Settings 
-              config={config} 
-              setConfig={setConfig} 
-              context={context}
-            />
-            <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
+        <div className="max-w-[1536px] h-full flex flex-col justify-center items-center">
+          <div className="max-w-5xl w-full h-[768px] bg-accent relative">
+            <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
+              <Settings 
+                config={config} 
+                setConfig={setConfig} 
+                context={context}
+              />
+              <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
+            </div>
+            <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
           </div>
-          <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
+          <div className="w-full h-full bg-transparent relative">
+            <ChatContainer />
+          </div>
         </div>
       </Live2DProvider>
   )
