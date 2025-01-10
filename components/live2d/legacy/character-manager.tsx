@@ -53,7 +53,7 @@ export function CharacterMotionManager({model, motionGroups, expressions}: Chara
         <DropdownMenuItem>
             <p className="text-muted-foreground font-mono text-sm">Expressions</p>
             {expressions.map((expression, index) => {
-                return (<button key={index}>${expression.file}</button>);
+                return (<button key={index}>${expression.file.replace('.exp.json', '').replace('.exp3.json', '')}</button>);
             })}
         </DropdownMenuItem>
         </span>

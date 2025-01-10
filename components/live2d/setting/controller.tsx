@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { CreateLive2DController } from "@/lib/live2d";
-import { MotionGroupEntry, ExpressionEntry } from "./character-manager";
+import { MotionGroupEntry, ExpressionEntry } from "@/types/model";
 import { Button } from "@/components/ui/button";
 import { 
     DropdownMenuItem,

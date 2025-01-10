@@ -19,3 +19,16 @@ export interface ModelContext extends ModelState, ModelActions {}
 export interface SwitchModelProps {
     context: ModelContext;
 }
+
+export interface MotionGroupEntry {
+    name: string;
+    motions: {
+        file: string;
+        error?: any;
+    }[]
+}
+
+export interface ExpressionEntry {
+    file: string;
+    error?: any;
+}

@@ -1,5 +1,5 @@
 import { MotionPriority, Live2DModel} from "pixi-live2d-display-lipsyncpatch/cubism4";
-import { MotionGroupEntry } from "@/components/live2d/character-manager";
+import { MotionGroupEntry } from "@/types/model";
 
 export function startMotion(model: InstanceType<typeof Live2DModel>, motionGroup: MotionGroupEntry, index: number) {
     model.motion(motionGroup.name, index, MotionPriority.FORCE)

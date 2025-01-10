@@ -22,11 +22,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ColorPicker, useColor, IColor } from "react-color-palette";
 import "react-color-palette/css";
 
-import { CanvasConfig } from "./canvas";
-import { Live2DController } from "@/components/live2d/controller";
+import { CanvasConfig } from "../canvas";
+import { Live2DController } from "@/components/live2d/setting/controller";
 
 import { ModelContext } from "@/types/model";
-import { SwitchModel } from "@/components/live2d/switch-model";
+import { SwitchModel } from "@/components/live2d/setting/switch-model";
 
 
 export function Settings({ config, setConfig, context }: { config: CanvasConfig, setConfig: (config: CanvasConfig) => void, context: ModelContext | null }) {

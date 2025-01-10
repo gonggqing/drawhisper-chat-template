@@ -2,9 +2,9 @@
 import axios from "axios";
 import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
-import { Live2DModel, MotionPriority } from "pixi-live2d-display-lipsyncpatch/cubism4";
+import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 import { draggable } from "@/lib/tools/dragging";
-import { Settings } from "./settings";
+import { Settings } from "./setting/settings";
 
 import { ModelFile } from "@/lib/tools/list-files";
 import { ModelContext } from "@/types/model";

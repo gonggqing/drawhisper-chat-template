@@ -39,13 +39,13 @@ export default function Live2DWrapper() {
 
     return (
         <div>
-            {/* Load Core first */}
+            {/* Load Live2D Core for cubism4 */}
             <Script 
                 src="/scripts/live2dcubismcore.min.js"
                 onLoad={handleCoreLoad}
                 onError={() => handleScriptError("Live2D Cubism Core")}
             />
-            {/* Then load Live2D library */}
+            {/* Then load Live2D library for cubism2 */}
             <Script 
                 src="/scripts/live2d.min.js"
                 onLoad={handleLive2DLoad}

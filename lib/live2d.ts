@@ -1,5 +1,5 @@
 import { Live2DModel, MotionManager, ExpressionManager, MotionState, MotionPriority } from "pixi-live2d-display-lipsyncpatch/cubism4";
-import { MotionGroupEntry, ExpressionEntry } from "@/components/live2d/character-manager";
+import { MotionGroupEntry, ExpressionEntry } from "@/types/model";
 
 export class CreateLive2DController {
     private static _instance: CreateLive2DController;
