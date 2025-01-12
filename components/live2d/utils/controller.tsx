@@ -145,10 +145,10 @@ export function Live2DController({ model }: Live2DControllerProps) {
                     </Button>
                 </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-col gap-2 items-start justify-start w-full">
+            <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-col gap-1 items-start justify-start w-full h-48 overflow-y-auto">
                     <p className="text-sm font-mono text-muted-foreground">Motions</p>
                     {motionGroups.map((group, groupIndex) => (
-                            <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-[color:#edf2fb] h-48 overflow-y-auto">
+                            <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-[color:#edf2fb]">
                                 <span className="text-sm font-mono text-muted-foreground capitalize">{group.name}</span>
                                 <div className="flex flex-col gap-2 w-full">
                                     {group.motions.map((motion, index) => (
@@ -173,9 +173,9 @@ export function Live2DController({ model }: Live2DControllerProps) {
             {expressions.length > 0 && (
                 <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <DropdownMenuLabel className="text-sm font-mono text-muted-foreground">Expressions</DropdownMenuLabel>
-                        <div className="flex flex-row gap-2 flex-wrap bg-[color:#edf2fb] h-32 overflow-y-auto">
+                    <DropdownMenuItem className="flex flex-col gap-1 items-start justify-start w-full h-36 overflow-y-auto">
+                        <DropdownMenuLabel className="text-sm font-mono text-muted-foreground ">Expressions</DropdownMenuLabel>
+                        <div className="flex flex-row gap-2 flex-wrap bg-[color:#edf2fb] ">
                             {expressions.map((expression, index) => (
                                 <Button
                                     key={index}

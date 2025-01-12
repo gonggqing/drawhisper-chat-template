@@ -12,7 +12,7 @@ export function ChatContainer() {
     const [messages, setMessages] = useState<MessagType[]>([
         {
             role: "assistant",
-            content: "Hello, how can I help you today?"
+            content: "Bonjour, comment ça va? Je suis un assistant virtuel, mon nom est aijer, je peux vous aider avec vos questions. Comment puis-je vous aider aujourd'hui?"
         },
         {
             role: "user",
