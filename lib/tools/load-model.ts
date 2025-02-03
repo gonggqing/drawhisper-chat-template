@@ -1,11 +1,11 @@
-import { MotionGroupEntry, ExpressionEntry } from "@/components/live2d/character-manager";
+import { MotionGroupEntry, ExpressionEntry } from "@/types/model";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 
 export function loadedModelConfig(model: InstanceType<typeof Live2DModel>): {
     motionGroups: MotionGroupEntry[];
     expressions: ExpressionEntry[];
   } {
-    let motionGroups: MotionGroupEntry[] = [];
+    const motionGroups: MotionGroupEntry[] = [];
     let expressions: ExpressionEntry[] = [];
   
     const motionManager = model.internalModel.motionManager;

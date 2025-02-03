@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus, X, CaretRight, Palette, Headset, UserSwitch } from "@phosphor-icons/react";
+import { useState } from "react";
+import { Plus, CaretRight, Palette } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { 
     DropdownMenu, 
@@ -13,11 +13,10 @@ import {
     DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+
 import { cn } from "@/lib/utils";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { ColorPicker, useColor, IColor } from "react-color-palette";
 import "react-color-palette/css";
@@ -28,6 +27,7 @@ import { Live2DController } from "@/components/live2d/utils/controller";
 import { ModelContext } from "@/types/model";
 import { SwitchModelButton } from "@/components/live2d/utils/switch-model";
 import { VoiceButton } from "@/components/live2d/utils/voice";
+import { VoiceClone } from "@/components/voice/voice-clone";
 
 
 export function Settings({ config, setConfig, context }: { config: CanvasConfig, setConfig: (config: CanvasConfig) => void, context: ModelContext | null }) {
@@ -36,6 +36,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
     const [color, setColor] = useColor(config.canvas.bg_color);
     const [expanded, setExpanded] = useState(true);
+    const [voiceCloneOpen, setVoiceCloneOpen] = useState(false);
 
     const handleColorChange = (newColor: IColor) => {
         setConfig({
@@ -134,6 +135,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                             <SwitchModelButton context={context} />
                         )}
                         <VoiceButton />
+                        <VoiceClone open={voiceCloneOpen} setOpen={setVoiceCloneOpen} />
                     </motion.div>
                 </div>
                 <Button 

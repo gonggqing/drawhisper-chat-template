@@ -12,7 +12,6 @@ import {
 } from "@huggingface/transformers";
 import { WaveFile } from 'wavefile';
 
-
 interface TTSResponse {
     blob: Blob;
     base64: string;

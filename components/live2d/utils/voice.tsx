@@ -32,14 +32,14 @@ export const VoiceButton = () => {
         try {
             setIsLoading(true);
             const response = await axios.get('/api/voices');
-            const { data: voices } = response;
-            setVoices(voices);
+            const { data: { data: voices } } = response;
+            setVoices(voices || []);
             voicesFetched.current = true;
-            console.log(`Loaded ${voices.length} voices: ${voices.map((voice: VoiceFile) => voice.name).join(', ')}`);
         } catch (error) {
             console.error('Failed to fetch voices:', error);
             // Optionally reset the ref to allow retry
             voicesFetched.current = false;
+            setVoices([]);
         } finally {
             setIsLoading(false);
         }
@@ -107,7 +107,7 @@ export const VoiceButton = () => {
                     </p>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {voices.map((voice) => (
+                {voices?.map((voice) => (
                     <DropdownMenuItem 
                         key={voice.name} 
                         className="flex items-center justify-between font-mono"

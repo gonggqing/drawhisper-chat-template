@@ -7,9 +7,11 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Play } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import Avatar from "./avatar";
-import { textToSpeech } from "@/lib/tts/worker";
+import { textToSpeech } from "@/lib/tts/legacy/worker";
 import { useContext } from "react";
 import { Live2DContext } from "@/context/live2d/live2d-context";
+
+import { generateSpeech } from "@/lib/tts/legacy/oute.ai";
 
 export interface MessagType {
     role: "user" | "assistant";
@@ -29,7 +31,7 @@ export const Message = ({ message }: MessageContainer) => {
     const handlePlay = async () => {
         if (!audio) {
             setIsLoading(true);
-            const { base64 } = await textToSpeech(message.content, "Xenova/mms-tts-fra");
+            const { base64 } = await textToSpeech(message.content, "Xenova/speecht5_tts");
             if (base64) {
                 setAudio(base64);
                 controller?.speak(base64);
@@ -41,6 +43,24 @@ export const Message = ({ message }: MessageContainer) => {
         setIsLoading(false);
     }
 
+    const handleOuteTTS = async () => {
+        if (!audio) {
+            setIsLoading(true);
+            const { status, data } = await generateSpeech(message.content, {
+                language: "en", 
+                speaker_id: "female_1"
+            });
+            console.log(status, data);
+            if (status === "success" && data.audio) {
+                setAudio(data.audio);
+                controller?.speak(data.audio);
+            }
+            setIsLoading(false);
+        } else {
+            controller?.speak(audio);
+        }
+        setIsLoading(false);
+    }
 
     return (
             <div className={cn(

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { textToSpeech } from "@/lib/tts/worker";
+import { textToSpeech } from "@/lib/tts/legacy/worker";
 import { z } from "zod";
 
 // Validate request body
@@ -10,13 +10,13 @@ const generateVoiceSchema = z.object({
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
         const body = await request.json();
-        
+
         console.log(`Request body: ${JSON.stringify(body)}`);
         const { text } = generateVoiceSchema.parse(body);
 
         console.log('Generating voice for text:', text);
 
-        const { base64 } = await textToSpeech(text);
+        const { base64 } = await textToSpeech(text, undefined);
 
         return NextResponse.json({
             success: true,

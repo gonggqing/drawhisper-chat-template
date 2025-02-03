@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Live2DWrapper from "@/components/live2d/live-2d-wrapper";
+import { InitTTSModel } from "@/components/voice/init-tts";
 
 export default function Home() {
   return (
     <div className="w-full h-fullitems-center justify-start min-h-screen p-4 pb-20 gap-16 sm:p-8 font-[family-name:var(--font-geist-sans)]">
       <main className="gap-4 row-start-2 items-center sm:items-start">
+        <InitTTSModel />
         <h1 className="text-4xl font-bold">Live 2D Canvas</h1>
         <div className="w-full h-full flex justify-center items-center">
           <Live2DWrapper />
