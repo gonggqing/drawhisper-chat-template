@@ -25,7 +25,7 @@ function bufferToBase64(buffer: Buffer): string {
 // GET: List all saved references
 export async function GET(): Promise<NextResponse> {
     try {
-        const referencesDir = path.join(process.cwd(), "public", "fish", "references");
+        const referencesDir = path.join(process.cwd(), "public", "fish-speech", "references");
         const jsonPath = path.join(referencesDir, "references.json");
 
         try {

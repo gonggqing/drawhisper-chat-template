@@ -30,7 +30,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const { speaker_id, audio, reference_text } = SaveVoiceSchema.parse(body);
 
         // Create references directory if it doesn't exist
-        const referencesDir = path.join(process.cwd(), "public", "fish", "references");
+        const referencesDir = path.join(process.cwd(), "public", "fish-speech", "references");
         await fs.mkdir(referencesDir, { recursive: true });
 
         // Save audio file
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // Prepare voice data
         const voiceData: ClonedVoice = {
             speaker_id,
-            audio: `/fish/references/${audioFileName}`,
+            audio: `/fish-speech/references/${audioFileName}`,
             reference_text
         };
 

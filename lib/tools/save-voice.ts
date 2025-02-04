@@ -1,6 +1,6 @@
 export interface ClonedVoice {
     speaker_id: string;
-    audio: string; // relative path, default is fs/references/${speaker_id}.wav
+    audio: string; // relative path, default is fish-speech/references/${speaker_id}.wav
     reference_text: string;
 }
 
