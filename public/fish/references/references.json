@@ -1,7 +1,17 @@
 [
   {
-    "speaker_id": "spaker",
-    "audio": "/fish/references/spaker.wav",
-    "reference_text": "Plans are well underway for races to Mars and the Moon in 1992 by solar sails. The race to Mars is to commemorate Columbus's journey to the New World 500 years ago, and the one to the Moon is to promote the use of solar sails in space exploration."
+    "speaker_id": "纳西坦",
+    "audio": "/fish/references/纳西坦.wav",
+    "reference_text": "我的过往相当单调，估计你听上一会儿就会像炮鲀吸水那样打哈欠。不过好奇心是弥足珍贵的东西，我也不想浪费…既然这样，我给你分享一些我做过的梦吧。"
+  },
+  {
+    "speaker_id": "神里绫华",
+    "audio": "/fish/references/神里绫华.wav",
+    "reference_text": "很多人因为我是「白鹭公主」，是社奉行神里家的大小姐而敬重我。他们所敬重的，只是我所身处的地位，与绫华我是怎样的人并无关系…所以我想，能真正走近我的，或许只有…"
+  },
+  {
+    "speaker_id": "纳西坦_日语",
+    "audio": "/fish/references/纳西坦_日语.wav",
+    "reference_text": "エミルが魔物になった瞬間を見た彼には、もう十分と言えるほど精神的な罰を与えられたと思うわ。"
   }
 ]

@@ -10,13 +10,13 @@ interface ClonedVoice {
 }
 
 interface VoiceFile {
-    name: string;
-    base64: string;
-    url?: string;
+    name: string;       // speaker_id
+    base64: string;     // base64 encoded audio data
+    url?: string;       // path to audio file or base64 URL
 }
 
 /**
- * Convert file buffer to base64
+ * Convert file buffer to base64 with proper mime type
  */
 function bufferToBase64(buffer: Buffer): string {
     return `data:audio/wav;base64,${buffer.toString('base64')}`;
@@ -45,7 +45,7 @@ export async function GET(): Promise<NextResponse> {
                         return {
                             name: ref.speaker_id,
                             base64,
-                            url: `${process.env.NEXT_PUBLIC_BASE_URL || ''}${ref.audio}`
+                            url: ref.audio // Keep the relative path as URL
                         } satisfies VoiceFile;
                     } catch {
                         return null;
@@ -96,15 +96,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         }
 
         const buffer = Buffer.from(await response.arrayBuffer());
-        const fileName = path.basename(url);
         const base64 = bufferToBase64(buffer);
+        const fileName = path.basename(url, '.wav'); // Remove .wav extension for speaker_id
 
         return NextResponse.json({
             status: "success",
             data: {
                 name: fileName,
                 base64,
-                url
+                url // Keep the original URL
             } satisfies VoiceFile
         });
     } catch (error) {

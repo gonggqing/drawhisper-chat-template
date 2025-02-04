@@ -12,7 +12,7 @@ export function ChatContainer() {
     const [messages, setMessages] = useState<MessagType[]>([
         {
             role: "assistant",
-            content: "Hello, how are you? I'm a virtual assistant, my name is aijer, I can help you with your questions. How can I help you today?"
+            content: "「神之眼」，即是胸怀大志之人所获的印绶。如果问我有什么志向的话…这个还是保密吧，只是一个微不足道的梦想罢了。"
         },
         {
             role: "user",

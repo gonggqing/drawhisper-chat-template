@@ -11,6 +11,8 @@ import { ModelContext } from "@/types/model";
 import { Live2DProvider } from "@/context/live2d/live2d-provider";
 import { CreateLive2DController } from "@/lib/live2d";
 import { ChatContainer } from "@/components/chat/chat-container";
+import { VoiceProvider } from "@/context/voice/voice-provider";
+import { VoiceType, useVoice } from "@/context/voice/voice-context";
 
 const setModelPosition = (
   app: Application,
@@ -38,12 +40,14 @@ export default function Live2D() {
   );
 
   const [context, setContext] = useState<ModelContext | null>(null);
-
   const [models, setModels] = useState<ModelFile[]>([]);
   const [modelLoading, setModelLoading] = useState(true);
   const [modelError, setModelError] = useState<string>();
   const [currentModel, setCurrentModel] = useState<ModelFile | null>(null);
   const [controller, setController] = useState<CreateLive2DController | null>(null);
+
+  const [voice, setVoice] = useState<VoiceType | null>(null);
+  const { voice: currentVoice, updateVoice } = useVoice();
 
   const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
@@ -187,8 +191,40 @@ export default function Live2D() {
     initApp();
   }, []);
 
+  // Initialize voice
+  useEffect(() => {
+    async function initVoice() {
+      try {
+        const response = await axios.get('/api/voices');
+        const { data: { data: voices } } = response;
+        if (voices && voices.length > 0) {
+          const initialVoice: VoiceType = {
+            speaker_id: voices[0].name,
+            audio: voices[0].base64,
+            reference_text: voices[0].name
+          };
+          console.log(`Initializing voice: ${initialVoice.speaker_id}`);
+          setVoice(initialVoice);
+          updateVoice(initialVoice);
+        }
+      } catch (error) {
+        console.error('Failed to initialize voice:', error);
+      }
+    }
+
+    if (!voice) {
+      initVoice();
+    }
+  }, [voice, updateVoice]);
+
+  // Log voice changes
+  useEffect(() => {
+    console.log(`Voice state updated to: ${voice?.speaker_id}`);
+  }, [voice]);
+
   return (
       <Live2DProvider data={{ controller }}>
+        <VoiceProvider data={voice}>
         <div className="max-w-[1536px] h-full flex flex-col justify-center items-center">
           <div className="max-w-5xl w-full h-[768px] bg-accent relative">
             <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
@@ -205,6 +241,7 @@ export default function Live2D() {
             <ChatContainer />
           </div>
         </div>
+        </VoiceProvider>
       </Live2DProvider>
   )
 }

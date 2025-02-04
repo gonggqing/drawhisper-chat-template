@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { useContext } from "react";
 import { Live2DContext } from "@/context/live2d/live2d-context";
 
 import { generateSpeech } from "@/lib/tts/legacy/oute.ai";
+import { FishTTS } from "@/lib/tts/fish.ai";
+import { useVoice } from "@/context/voice/voice-context";
 
 export interface MessagType {
     role: "user" | "assistant";
@@ -27,6 +29,72 @@ export const Message = ({ message }: MessageContainer) => {
     const [isLoading, setIsLoading] = useState(false);
     const [audio, setAudio] = useState<string | null>(null);
     const { controller } = useContext(Live2DContext);
+    const { voice } = useVoice();
+
+    // Read audio file as Blob from public directory
+    const audioFile = useCallback(async () => {
+        if (!voice?.audio) return null;
+        
+        try {
+            // Fetch the actual file and get blob directly
+            const response = await fetch(voice.audio);
+            if (!response.ok) throw new Error('Failed to fetch audio file');
+            
+            // Get blob and create File object
+            const blob = await response.blob();
+            return new File([blob], `${voice.speaker_id}.wav`, { type: 'audio/wav' });
+        } catch (error) {
+            console.error('Failed to load audio file:', error);
+            return null;
+        }
+    }, [voice?.speaker_id]);
+
+    const tts = new FishTTS({
+        apiKey: process.env.FISH_API_KEY,
+        baseUrl: "http://127.0.0.1:8080/v1/tts",
+        streaming: false
+    });
+
+    const handlePalyAudio = useCallback(async () => {
+        if (!voice?.speaker_id) return;
+        if (!audio) {
+            setIsLoading(true);
+        
+            // Get the reference audio file as blob
+            const referenceFile = await audioFile();
+            if (!referenceFile) {
+                console.error('Failed to get reference audio file');
+                setIsLoading(false);
+                return;
+            }
+
+            console.log(`voice:${voice?.speaker_id}`);
+            const response = await tts.generateSpeech({
+                text: message.content,
+                referenceAudio: [referenceFile],
+                referenceText: [voice?.reference_text || ""],
+                options: {
+                    format: "wav",
+                    normalize: true,
+                    chunk_length: 300,
+                    latency: "balanced",
+                    channels: 2,
+                    top_p: 0.5,
+                    temperature: 0.7,
+                    repetition_penalty: 1.2
+                }
+            });
+            if (response.status === "success" && response.data.audio) {
+                const { base64, blob } = response.data.audio;
+                setAudio(base64);
+                controller?.speak(base64);
+                setIsLoading(false);
+            }
+
+        } else {
+            controller?.speak(audio);
+        }
+    }, [message.content, voice?.speaker_id]);
 
     const handlePlay = async () => {
         if (!audio) {
@@ -80,7 +148,7 @@ export const Message = ({ message }: MessageContainer) => {
                     <Button 
                         variant="default" 
                         className="w-6 h-6 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-                        onClick={handlePlay}
+                        onClick={handlePalyAudio}
                         disabled={isLoading}
                     >
                         <Play size={12} weight="fill" />

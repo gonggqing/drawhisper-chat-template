@@ -17,6 +17,7 @@ import { Live2DContext } from "@/context/live2d/live2d-context";
 import { useState, useEffect } from "react";
 import { VoiceFile } from "@/lib/tools/load-voice";
 import { Slider } from "@/components/ui/slider";
+import { useVoice } from "@/context/voice/voice-context";
 
 export const VoiceButton = () => {
     const { controller } = useContext(Live2DContext);
@@ -24,6 +25,8 @@ export const VoiceButton = () => {
     const [volume, setVolume] = useState<number>(1);
     const [isLoading, setIsLoading] = useState(false);
     const voicesFetched = useRef(false);
+
+    const { voice: currentVoice, updateVoice } = useVoice();
 
     // Move fetch to a separate function with error handling
     const fetchVoices = useCallback(async () => {
@@ -110,7 +113,18 @@ export const VoiceButton = () => {
                 {voices?.map((voice) => (
                     <DropdownMenuItem 
                         key={voice.name} 
-                        className="flex items-center justify-between font-mono"
+                        className={cn(
+                            "flex items-center justify-between font-mono bg-[color:#edf2fb] transition-all rounded-md duration-500",
+                            voice.name === currentVoice?.speaker_id && "bg-blue-300"
+                        )}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            updateVoice({
+                                speaker_id: voice.name,
+                                audio: voice.base64,
+                                reference_text: voice.name
+                            });
+                        }}
                     >
                         <span className="truncate">
                             {voice.name.replace('.wav', '')}
@@ -118,8 +132,11 @@ export const VoiceButton = () => {
                         <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#e2eafc] transition-all rounded-full duration-500 flex-shrink-0"
-                            onClick={() => handleVoicePlay(voice)}
+                            className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500 flex-shrink-0"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleVoicePlay(voice);
+                            }}
                         >
                             <Play size={24} weight="fill" />
                         </Button>
