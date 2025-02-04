@@ -225,8 +225,8 @@ export default function Live2D() {
   return (
       <Live2DProvider data={{ controller }}>
         <VoiceProvider data={voice}>
-        <div className="max-w-[1536px] h-full flex flex-col justify-center items-center">
-          <div className="max-w-5xl w-full h-[768px] bg-accent relative">
+        <div className="max-w-5xl h-full flex flex-col justify-start items-start">
+          <div className="w-full h-[768px] bg-accent relative">
             <div className="absolute top-2 left-4 bg-transparent z-10 flex flex-col gap-2">
               <Settings 
                 config={config} 
