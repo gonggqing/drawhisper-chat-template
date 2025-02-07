@@ -13,9 +13,22 @@ import {
 } from "@/components/ui/sidebar";
 import { FinnTheHuman, DotsThree } from "@phosphor-icons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { UserForm } from "@/components/forms/user-form";
+import useUser from "@/lib/store/user-store";
+import { useEffect, useState } from "react";
 
 export const AppSidebar = () => {
+    const user = useUser((state) => state.getUser());
+    const [username, setUsername] = useState<string | null>(null);
+    const [avatar, setAvatar] = useState<string | null>(null);
+
+    useEffect(() => {
+        setUsername(user?.username || "User");
+        setAvatar(user?.avatar || null);
+    }, [user]);
+
     return (
         <Sidebar className="z-50">
             <SidebarHeader className="gap-2 flex flex-row items-center justify-start border-b border-sidebar-border h-14">
@@ -25,7 +38,7 @@ export const AppSidebar = () => {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>
-                        Local Chat
+                        Your Chats
                     </SidebarGroupLabel>
                     {/* <SidebarMenu>
                         <SidebarMenuItem>
@@ -36,20 +49,19 @@ export const AppSidebar = () => {
                     </SidebarMenu> */}
                 </SidebarGroup>
             </SidebarContent>
+            <Separator className="border-sidebar-border"/>
             <SidebarFooter>
                 <div className="flex flex-row p-2 w-full justify-between items-center rounded-md bg-sidebar-accent">
                     <div className="flex flex-row gap-2 items-center">
                         <Avatar>
-                            <AvatarImage src="/image/radien.jpg" />
+                            <AvatarImage src={avatar || "/image/radien.jpg"} />
                             <AvatarFallback>U</AvatarFallback>
                         </Avatar>
-                        <p className="text-sm font-medium">User</p>
+                        <p className="text-sm font-medium">{username || "User"}</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-300 rounded-full">
-                        <DotsThree size={24} weight="bold" />
-                    </Button>
+                    <UserForm />
                 </div>
             </SidebarFooter>
         </Sidebar>
-    )
+    );
 }

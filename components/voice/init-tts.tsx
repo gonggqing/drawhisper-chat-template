@@ -58,7 +58,7 @@ export const InitTTSModel = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="relative w-full flex-1 flex flex-col items-center justify-start">
-                    <div className="z-10 flex flex-col items-center gap-4 mt-8">
+                    <div className="z-10 flex flex-col items-center gap-4 mt-8 p-4">
                         <p className="font-mono text-muted-foreground">Status: {status}</p>
                         {status === "ready"
                             ?  <Check weight="bold" size={36} color="rgba(57, 115, 172, 1)" />
