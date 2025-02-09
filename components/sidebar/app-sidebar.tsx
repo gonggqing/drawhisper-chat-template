@@ -20,7 +20,7 @@ import { UserForm } from "@/components/forms/user-form";
 import { useEffect, useState } from "react";
 import { TooltipWrapper } from "@/components/tooltip-provider";
 
-import { CharacterSetting } from "@/components/sidebar/character-setting";
+import { CharacterSetting } from "@/components/forms/character-form";
 import useUser from "@/lib/store/user-store";
 import useCharacter, { CharacterState } from "@/lib/store/character-store";
 import { toast } from "sonner";
@@ -72,7 +72,7 @@ export const AppSidebar = () => {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>
-                        Your Chats 
+                        Chats 
                     </SidebarGroupLabel>
                     {/* <SidebarMenu>
                         <SidebarMenuItem>
