@@ -15,6 +15,8 @@ import { generateSpeech } from "@/lib/tts/legacy/oute.ai";
 import { FishTTS } from "@/lib/tts/fish.ai";
 import { useVoice } from "@/context/voice/voice-context";
 
+import useUser from "@/lib/store/user-store";   
+
 export interface MessagType {
     role: "user" | "assistant";
     content: string;
@@ -30,6 +32,8 @@ export const Message = ({ message }: MessageContainer) => {
     const [audio, setAudio] = useState<string | null>(null);
     const { controller } = useContext(Live2DContext);
     const { voice } = useVoice();
+
+    const avatar = useUser((state) => state.getUser()?.avatar);
 
     // Read audio file as Blob from public directory
     const audioFile = useCallback(async () => {
@@ -138,12 +142,12 @@ export const Message = ({ message }: MessageContainer) => {
                 {message.role === "assistant" && <Avatar src={"/image/aijier.jpg"} fallback={"AI"} />}
                 <Card className={cn(
                     "max-w-xs min-w-[224px] min-h-[40px] inline-flex flex-wrap p-2 items-center shadow-none relative rounded-lg border-none",
-                    message.role === "user" && "bg-[color:#bde0fe] place-self-end",
-                    message.role === "assistant" && "bg-[color:#ffc2d1] self-start",
+                    message.role === "user" && "bg-[color:#bde0fe] place-self-end rounded-br-none",
+                    message.role === "assistant" && "bg-[color:#ffc2d1] self-start rounded-bl-none",
                     )}>
                         <p className="text-sm font-mono text-primary">{message.content}</p>
                 </Card>
-                {message.role === "user" && <Avatar src={"/image/radien.jpg"} fallback={"U"} />}
+                {message.role === "user" && <Avatar src={avatar || "/image/radien.jpg"} fallback={"U"} />}
                 {message.role === "assistant" && 
                     <Button 
                         variant="default" 

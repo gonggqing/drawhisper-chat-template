@@ -185,7 +185,7 @@ export const UserForm = () => {
                                 <FormItem>
                                     <FormLabel>Info</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="your info" {...field} rows={4} />
+                                        <Textarea placeholder="your info" {...field} rows={3} className="resize-none" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -12,7 +12,6 @@ interface State {
   chats: Record<string, ChatSession>;
   currentChatId: string | null;
   selectedModel: string | null;
-  userName: string | "Anonymous";
 }
 
 interface Actions {
@@ -23,7 +22,6 @@ interface Actions {
   getMessagesById: (chatId: string) => Message[];
   saveMessages: (chatId: string, messages: Message[]) => void;
   handleDelete: (chatId: string, messageId?: string) => void;
-  setUserName: (userName: string) => void;
 }
 
 const useChatStore = create<State & Actions>()(
@@ -33,10 +31,8 @@ const useChatStore = create<State & Actions>()(
       chats: {},
       currentChatId: null,
       selectedModel: null,
-      userName: "Anonymous",
 
       setBase64Images: (base64Images) => set({ base64Images }),
-      setUserName: (userName) => set({ userName }),
 
       setCurrentChatId: (chatId) => set({ currentChatId: chatId }),
       setSelectedModel: (selectedModel) => set({ selectedModel }),
@@ -98,7 +94,6 @@ const useChatStore = create<State & Actions>()(
         chats: state.chats,
         currentChatId: state.currentChatId,
         selectedModel: state.selectedModel,
-        userName: state.userName,
       }),
     }
   )
