@@ -10,7 +10,7 @@ import { ModelFile } from "@/lib/tools/list-files";
 import { ModelContext } from "@/types/model";
 import { Live2DProvider } from "@/context/live2d/live2d-provider";
 import { CreateLive2DController } from "@/lib/live2d";
-import { ChatContainer } from "@/components/chat/chat-container";
+import { ChatClient } from "@/components/chat/chat-client";
 import { VoiceProvider } from "@/context/voice/voice-provider";
 import { VoiceType, useVoice } from "@/context/voice/voice-context";
 
@@ -237,8 +237,10 @@ export default function Live2D() {
             </div>
             <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
           </div>
-          <div className="w-full h-full bg-transparent relative">
-            <ChatContainer />
+          <div className="w-full h-full flex justify-center items-center relative">
+            <div className="absolute -translate-x-1/2 left-1/2 bottom-2 flex flex-col gap-2">
+              <ChatClient initialMessages={[]} id="1" isMobile={false} />
+            </div>
           </div>
         </div>
         </VoiceProvider>

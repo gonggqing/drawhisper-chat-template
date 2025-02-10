@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Live2DWrapper from "@/components/live2d/live-2d-wrapper";
 import { InitTTSModel } from "@/components/voice/init-tts";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";

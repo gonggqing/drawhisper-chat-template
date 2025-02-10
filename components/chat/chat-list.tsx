@@ -5,16 +5,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CaretDown, PaperPlaneRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { Message, MessagType } from "./message";
+import { MessageItem } from "./message";
+import { Message } from "ai";
 
-export function ChatContainer() {
+
+interface ChatListProps {
+    messages: Message[];
+    isLoading: boolean;
+    loadingSubmit?: boolean;
+  }
+
+export function ChatList({ messages, isLoading, loadingSubmit }: ChatListProps) {
     const [isOpen, setIsOpen] = useState(true);
-    const [messages, setMessages] = useState<MessagType[]>([
+    const [historyMessages, setHistoryMessages] = useState<Message[]>([
         {
+            id: "1",
             role: "assistant",
             content: "「神之眼」，即是胸怀大志之人所获的印绶。如果问我有什么志向的话…这个还是保密吧，只是一个微不足道的梦想罢了。"
         },
         {
+            id: "2",
             role: "user",
             content: "I'm fine, thank you! I'm a user, I can help you with your questions. "
         }
@@ -35,7 +45,7 @@ export function ChatContainer() {
                             <div className="h-[300px] px-4 pt-4 overflow-y-auto mb-4 flex gap-2 flex-col-reverse">
                                 <div className="space-y-4">
                                     {messages.map((message, index) => (
-                                        <Message key={index} message={message} />
+                                        <MessageItem key={index} message={message} />
                                     ))}
                                 </div>
                             </div>
@@ -63,7 +73,7 @@ export function ChatContainer() {
                                 )} 
                             />
                         </Button>
-                        <div className=" flex-1 flex items-center gap-2 bg-white rounded-lg p-2">
+                        <div className="flex-1 flex items-center gap-2 bg-white rounded-lg p-2">
                             <input
                                 type="text"
                                 placeholder="Type a message..."

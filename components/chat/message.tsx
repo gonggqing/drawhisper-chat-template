@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Play } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
-import Avatar from "./avatar";
+import Avatar from "../avatar-wrapper";
 import { textToSpeech } from "@/lib/tts/legacy/worker";
 import { useContext } from "react";
 import { Live2DContext } from "@/context/live2d/live2d-context";
@@ -17,17 +17,13 @@ import { useVoice } from "@/context/voice/voice-context";
 
 import useUser from "@/lib/store/user-store";   
 
-export interface MessagType {
-    role: "user" | "assistant";
-    content: string;
-
-}
+import { Message } from "ai";
 
 interface MessageContainer {
-    message: MessagType;
+    message: Message;
 }
 
-export const Message = ({ message }: MessageContainer) => {
+export const MessageItem = ({ message }: MessageContainer) => {
     const [isLoading, setIsLoading] = useState(false);
     const [audio, setAudio] = useState<string | null>(null);
     const { controller } = useContext(Live2DContext);

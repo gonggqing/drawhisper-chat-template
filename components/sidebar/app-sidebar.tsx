@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { UserForm } from "@/components/forms/user-form";
 import { useEffect, useState } from "react";
-import { TooltipWrapper } from "@/components/tooltip-provider";
+import { TooltipWrapper } from "@/components/tooltip-wrapper";
 
 import { CharacterSetting } from "@/components/forms/character-form";
 import useUser from "@/lib/store/user-store";
