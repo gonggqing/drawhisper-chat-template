@@ -11,6 +11,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@huggingface/transformers": "^3.2.4",
+    "@langchain/core": "^0.3.39",
     "@msgpack/msgpack": "^3.0.0-beta3",
     "@paralleldrive/cuid2": "^2.2.2",
     "@phosphor-icons/react": "^2.1.7",
@@ -23,7 +24,7 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "@types/dom-speech-recognition": "^0.0.4",
+    "@types/react-speech-recognition": "^3.9.6",
     "@webgpu/types": "^0.1.53",
     "ai": "^4.1.18",
     "axios": "^1.7.9",
@@ -56,6 +57,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/dom-speech-recognition": "^0.0.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

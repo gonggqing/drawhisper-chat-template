@@ -27,9 +27,10 @@ export function Live2DController({ model }: Live2DControllerProps) {
     const [motionGroups, setMotionGroups] = useState<MotionGroupEntry[]>([]);
     const [expressions, setExpressions] = useState<ExpressionEntry[]>([]);
     // model control
-    const [randomMotion, setRandomMotion] = useState(false);
     const [scale, setScale] = useState(model.scale.x);
     const [rotation, setRotation] = useState(model.rotation);
+
+    const [initial_scale, setInitialScale] = useState(model.scale.x);
 
     useEffect(() => {
         if (!controller) return;
@@ -38,16 +39,9 @@ export function Live2DController({ model }: Live2DControllerProps) {
     }, [controller]);
 
     const handleRandomMotion = () => {
-        if (!controller) return;
+        if (!controller || motionGroups.length === 0) return;
         
-        if (!randomMotion) {
-            setRandomMotion(true);
-            controller.setRandomMotion();
-        } else {
-            // Start the default idle motion
-            setRandomMotion(false);
-            controller.startMotion(motionGroups[0], 0);
-        }
+        controller.setRandomMotion();
     };
 
     const handleMotionStart = (group: MotionGroupEntry, index: number) => {
@@ -74,12 +68,13 @@ export function Live2DController({ model }: Live2DControllerProps) {
 
     const handleReset = () => {
         if (!controller) return;
-        controller.setScale(0.1);
+        controller.setScale(initial_scale);
         controller.setRotation(0);
-        controller.startMotion(motionGroups[0], 0);
-        setScale(0.1);
+        if (motionGroups.length > 0) {
+            controller.startMotion(motionGroups[0], 0);
+        }
+        setScale(initial_scale);
         setRotation(0);
-        setRandomMotion(false);
     }
 
     return (
@@ -144,32 +139,36 @@ export function Live2DController({ model }: Live2DControllerProps) {
                          <ArrowCounterClockwise size={24} weight="fill" />
                     </Button>
                 </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-col gap-1 items-start justify-start w-full h-48 overflow-y-auto">
-                    <p className="text-sm font-mono text-muted-foreground">Motions</p>
-                    {motionGroups.map((group, groupIndex) => (
-                            <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-[color:#edf2fb]">
-                                <span className="text-sm font-mono text-muted-foreground capitalize">{group.name}</span>
-                                <div className="flex flex-col gap-2 w-full">
-                                    {group.motions.map((motion, index) => (
-                                        <Button
-                                            key={`${group.name}-${index}`}
-                                            variant="ghost"
-                                            size="sm"
-                                            className={cn(
-                                                "h-8 w-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] transition-all rounded duration-500",
-                                                motion.error && "opacity-50 cursor-not-allowed"
-                                            )}
-                                            onClick={() => handleMotionStart(group, index)}
-                                            disabled={!!motion.error}
-                                        >
-                                            {motion.file.replace(".mnt", "").replace(".motion3.json", "")}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-            </DropdownMenuItem>
+                {motionGroups.length > 0 && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-col gap-1 items-start justify-start w-full h-48 overflow-y-auto">
+                            <p className="text-sm font-mono text-muted-foreground">Motions</p>
+                            {motionGroups.map((group, groupIndex) => (
+                                    <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-[color:#edf2fb]">
+                                        <span className="text-sm font-mono text-muted-foreground capitalize">{group.name}</span>
+                                        <div className="flex flex-col gap-2 w-full">
+                                            {group.motions.map((motion, index) => (
+                                                <Button
+                                                    key={`${group.name}-${index}`}
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className={cn(
+                                                        "h-8 w-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] transition-all rounded duration-500",
+                                                        motion.error && "opacity-50 cursor-not-allowed"
+                                                    )}
+                                                    onClick={() => handleMotionStart(group, index)}
+                                                    disabled={!!motion.error}
+                                                >
+                                                    {motion.file.replace(".mnt", "").replace(".motion3.json", "")}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                    </DropdownMenuItem>
+                    </>
+                )}
             {expressions.length > 0 && (
                 <>
                     <DropdownMenuSeparator />

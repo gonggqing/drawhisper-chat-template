@@ -3,8 +3,10 @@ import axios from "axios";
 import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
-import { draggable } from "@/lib/tools/dragging";
+// import { draggable } from "@/lib/tools/dragging";
+import { focus } from "@/lib/tools/tap-focus";
 import { Settings } from "./setting/settings";
+import { createGyroscope } from "@/lib/tools/gyroscope";
 
 import { ModelFile } from "@/lib/tools/list-files";
 import { ModelContext } from "@/types/model";
@@ -13,16 +15,19 @@ import { CreateLive2DController } from "@/lib/live2d";
 import { ChatClient } from "@/components/chat/chat-client";
 import { VoiceProvider } from "@/context/voice/voice-provider";
 import { VoiceType, useVoice } from "@/context/voice/voice-context";
+import { CaretDown } from "@phosphor-icons/react";
+
+import { AnimatePresence, motion } from "framer-motion";
 
 const setModelPosition = (
   app: Application,
   model: InstanceType<typeof Live2DModel>
 ) => {
   const scaleX = (app.renderer.width * .4) / model.width;
-  const scaleY = (app.renderer.height * .8) / model.height;
+  const scaleY = (app.renderer.height * .6) / model.height;
   model.scale.set(Math.min(scaleX, scaleY));
-  model.x = app.renderer.width / 4;
-  model.y = app.renderer.height / 4;
+  model.x = app.renderer.width / 2.5;
+  model.y = app.renderer.height / 3.5;
 };
 
 export interface CanvasConfig {
@@ -34,6 +39,8 @@ export interface CanvasConfig {
 
 export default function Live2D() {
   const canvasContainerRef = useRef<HTMLCanvasElement>(null);
+  const gyroCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [showGyroscope, setShowGyroscope] = useState(false);
   const [app, setApp] = useState<Application | null>(null);
   const [model, setModel] = useState<InstanceType<typeof Live2DModel> | null>(
     null
@@ -78,24 +85,34 @@ export default function Live2D() {
     try {
       const model = await Live2DModel.from(
         modelPath,
-        { ticker: Ticker.shared }
+        { ticker: Ticker.shared, autoFocus: true, autoUpdate: true,  }
       );
 
       currentApp.stage.addChild(model as unknown as DisplayObject);
 
-      draggable(model);
+      model.anchor.set(1, 0.5);
 
-      model.anchor.set(.5, .5);
+      // draggable(model);
+      // focus(model, canvasContainerRef);
+
       setModelPosition(currentApp, model);
 
-      model.on("hit", (hitAreas) => {
-        if (hitAreas.includes("")) {
-          model.motion("idle");
-        }
-      });
+      // model.on("hit", (hitAreas) => {
+      //   if (hitAreas.includes("")) {
+      //     model.motion("idle");
+      //   }
+      // });
 
       setModel(model);
       setController(new CreateLive2DController(model));
+
+      // Initialize gyroscope with its own canvas
+      if (gyroCanvasRef.current && showGyroscope) {
+        const cleanup = createGyroscope(model, gyroCanvasRef);
+        return () => {
+          cleanup();
+        };
+      }
 
     } catch (error) {
       console.error("Failed to load Live2D model:", error);
@@ -222,6 +239,16 @@ export default function Live2D() {
     console.log(`Voice state updated to: ${voice?.speaker_id}`);
   }, [voice]);
 
+  // Add effect to handle gyroscope toggle
+  useEffect(() => {
+    if (!model || !gyroCanvasRef.current) return;
+
+    if (showGyroscope) {
+      const cleanup = createGyroscope(model, gyroCanvasRef);
+      return () => cleanup();
+    }
+  }, [showGyroscope, model]);
+
   return (
       <Live2DProvider data={{ controller }}>
         <VoiceProvider data={voice}>
@@ -235,10 +262,40 @@ export default function Live2D() {
               />
               <div className="live2d-controls flex flex-row gap-2 p-1.5 items-start justify-start font-mono text-muted-foreground" />
             </div>
-            <canvas ref={canvasContainerRef} className="w-full h-full bg-accent rounded" />
+            <canvas ref={canvasContainerRef} className="live2d-canvas w-full h-full bg-accent rounded select-none" />
+            
+            {/* Gyroscope Toggle Button */}
+            <button
+              onClick={() => setShowGyroscope(!showGyroscope)}
+              className="absolute bottom-2 right-6 z-10 p-2 rounded-full bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-200"
+            >
+              <CaretDown 
+                className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                  showGyroscope ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Gyroscope Canvas */}
+            {showGyroscope && (
+              <motion.canvas 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                ref={gyroCanvasRef}
+                className="absolute bottom-8 bg-transparent right-5 pointer-events-auto z-10 transition-opacity duration-200"
+                width={120}
+                height={120}
+                style={{
+                  borderRadius: '50%',
+                  backdropFilter: 'blur(4px)'
+                }}
+              />
+            )}
           </div>
           <div className="w-full h-full flex justify-center items-center relative">
-            <div className="absolute -translate-x-1/2 left-1/2 bottom-2 flex flex-col gap-2">
+            <div className="absolute -translate-x-1/2 left-1/2 bottom-2 flex flex-col gap-2 select-none">
               <ChatClient initialMessages={[]} id="1" isMobile={false} />
             </div>
           </div>

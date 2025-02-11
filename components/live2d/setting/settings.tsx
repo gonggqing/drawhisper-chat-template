@@ -79,7 +79,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                         <CaretRight size={24} weight="bold" />
                     </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-72 p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded">
+                    <DropdownMenuContent align="start" className="w-72 max-h-[85dvh] p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded">
                         <DropdownMenuGroup>
                             <DropdownMenuLabel className="text-base text-muted-foreground">Canvas</DropdownMenuLabel>
                             <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">

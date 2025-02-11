@@ -10,6 +10,7 @@ import {
   X,
   Stop,
   PaperPlaneRight,
+  Microphone
 } from "@phosphor-icons/react";
 import { SendHorizonal } from "lucide-react";
 import useChatStore from "@/lib/store/chat-store";
@@ -17,8 +18,9 @@ import Image from "next/image";
 import { ChatRequestOptions, Message } from "ai";
 import { Textarea } from "@/components/ui/textarea";
 import MultiImagePicker from "@/components/image-picker";
+import useSpeechToText from "@/hooks/use-stt";
 
-interface ChatBottombarProps {
+interface ChatInputProps {
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
@@ -30,14 +32,14 @@ interface ChatBottombarProps {
   input: string;
 }
 
-export default function ChatBottombar({
+export default function ChatInput({
   input,
   handleInputChange,
   handleSubmit,
   isLoading,
   stop,
   setInput,
-}: ChatBottombarProps) {
+}: ChatInputProps) {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const base64Images = useChatStore((state) => state.base64Images);
   const setBase64Images = useChatStore((state) => state.setBase64Images);
@@ -48,6 +50,25 @@ export default function ChatBottombar({
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
+  };
+
+  const { isListening, transcript, startListening, stopListening } = useSpeechToText({
+    lang: "zh-CN",
+    continuous: true,
+    interimResults: true,
+  });
+
+  const listen = () => {
+    isListening ? stopVoiceInput() : startListening();
+  };
+
+  const stopVoiceInput = () => {
+    setInput && setInput(transcript.length ? transcript : "");
+    stopListening();
+  };
+
+  const handleListenClick = () => {
+    listen();
   };
 
   useEffect(() => {
@@ -65,12 +86,12 @@ export default function ChatBottombar({
           className="w-full items-center flex flex-col rounded-lg border-none bg-accent/80"
         >
           <Textarea
-            value={input}
+            value={isListening ? (transcript.length ? transcript : "") : input}
             ref={inputRef}
             onKeyDown={handleKeyPress}
             onChange={handleInputChange}
             name="message"
-            placeholder={"Enter your prompt here"}
+            placeholder={!isListening ? "Enter your prompt here" : "Listening"}
             className="flex-1 bg-accent/80 text-sm w-[572px] border-none shadow-none resize-none focus-visible:ring-accent font-mono"
             rows={2}
           />
@@ -80,35 +101,65 @@ export default function ChatBottombar({
               // Loading state
                 <div className="flex flex-row w-full justify-between">
                   <MultiImagePicker onImagesPick={setBase64Images} disabled />
-                  <Button
-                    className="shrink-0 rounded-full w-9 h-9"
-                    variant="ghost"
-                    size="icon"
-                    type="submit"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      stop();
-                    }}
-                  >
-                    <Stop weight="fill" size={24} />
-                  </Button>
+                  <div className="flex flex-row gap-2">
+                    <Button
+                        className="shrink-0 rounded-full bg-[color:#e2eafc]"
+                        variant="ghost"
+                        size="icon"
+                        type="button"
+                        disabled
+                    >
+                        <Microphone weight="fill" size={24} />
+                    </Button>
+                    <Button
+                        className="shrink-0 rounded-full w-9 h-9"
+                        variant="ghost"
+                        size="icon"
+                        type="submit"
+                        onClick={(e) => {
+                        e.preventDefault();
+                        stop();
+                        }}
+                    >
+                        <Stop weight="fill" size={24} />
+                    </Button>
+                  </div>
                 </div>
             ) : (
               // Default state
                 <div className="flex flex-row w-full justify-between">
                   <MultiImagePicker disabled={isLoading} onImagesPick={setBase64Images}  />
-                  <Button
-                    className="h-9 w-9 rounded-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] text-foreground flex-shrink-0"
-                    variant="ghost"
-                    size="icon"
-                    type="submit"
-                    disabled={
-                      isLoading ||
-                      !input.trim()
-                    }
-                  >
-                    <PaperPlaneRight weight="fill" size={24} />
-                  </Button>
+                  <div className="flex flex-row gap-2">
+                    <Button
+                        className={`shrink-0 rounded-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] ${
+                        isListening
+                            ? "relative bg-[color:#d7e3fc] hover:bg-[color:#e2eafc]"
+                            : ""
+                        }`}
+                        variant="ghost"
+                        size="icon"
+                        type="button"
+                        onClick={handleListenClick}
+                        disabled={isLoading}
+                    >
+                        <Microphone weight="fill" size={24} />
+                        {isListening && (
+                            <span className="animate-pulse absolute h-[120%] w-[120%] rounded-full bg-blue-500/30" />
+                        )}
+                    </Button>
+                    <Button
+                        className="h-9 w-9 rounded-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] text-foreground flex-shrink-0"
+                        variant="ghost"
+                        size="icon"
+                        type="submit"
+                        disabled={
+                        isLoading ||
+                        !input.trim()
+                        }
+                    >
+                        <PaperPlaneRight weight="fill" size={24} />
+                    </Button>
+                  </div>
                 </div>
             )}
           </div>
