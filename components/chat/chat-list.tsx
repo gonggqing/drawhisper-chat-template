@@ -6,28 +6,30 @@ import { Button } from "@/components/ui/button";
 import { CaretDown, PaperPlaneRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { MessageItem } from "./message";
-import { Message } from "ai";
-
+import { Message, ChatRequestOptions } from "ai";
+import ChatMessage from "./chat-message";
 
 interface ChatListProps {
     messages: Message[];
     isLoading: boolean;
     loadingSubmit?: boolean;
+    play: (message: Message) => void;
+    reload: (chatRequestOptions?: ChatRequestOptions) => Promise<string | null | undefined>;
   }
 
-export function ChatList({ messages, isLoading, loadingSubmit }: ChatListProps) {
+export function ChatList({ messages, isLoading, loadingSubmit, play, reload }: ChatListProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [historyMessages, setHistoryMessages] = useState<Message[]>([
         {
-            id: "1",
-            role: "assistant",
-            content: "「神之眼」，即是胸怀大志之人所获的印绶。如果问我有什么志向的话…这个还是保密吧，只是一个微不足道的梦想罢了。"
-        },
-        {
-            id: "2",
+            id: "2213213",
             role: "user",
             content: "I'm fine, thank you! I'm a user, I can help you with your questions. "
-        }
+        },
+        {
+            id: "121312312",
+            role: "assistant",
+            content: "<think>嗯这个人在想什么，居然问我这样的问题，唉～又要开始瞎编了好麻烦～</think>「神之眼」，即是胸怀大志之人所获的印绶。如果问我有什么志向的话…这个还是保密吧，只是一个微不足道的梦想罢了。"
+        },
     ]);
 
     return (
@@ -37,15 +39,15 @@ export function ChatList({ messages, isLoading, loadingSubmit }: ChatListProps) 
                     {isOpen && (
                         <motion.div
                             initial={{ height: 0, opacity: 0.2 }}
-                            animate={{ height: 300, opacity: 1 }}
+                            animate={{ height: 350, opacity: 1 }}
                             exit={{ height: 0, opacity: 0, transition: { duration: 0.2 }, y: 100 }}
                             transition={{ type: "spring", stiffness: 400, damping: 20 }}
                             className="w-full overflow-hidden"
                         >
-                            <div className="h-[300px] px-4 pt-4 overflow-y-auto mb-4 flex gap-2 flex-col-reverse">
+                            <div className="h-[350px] px-4 pt-4 overflow-y-auto mb-4 flex gap-2 flex-col-reverse">
                                 <div className="space-y-4">
-                                    {messages.map((message, index) => (
-                                        <MessageItem key={index} message={message} />
+                                    {historyMessages.map((message, index) => (
+                                        <ChatMessage key={index} message={message} isLast={index === historyMessages.length - 1} isLoading={isLoading} reload={reload} play={play} />
                                     ))}
                                 </div>
                             </div>

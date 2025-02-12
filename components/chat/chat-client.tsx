@@ -6,7 +6,7 @@ import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { BytesOutputParser } from "@langchain/core/output_parsers";
 import { Attachment, ChatRequestOptions, generateId } from "ai";
 import { Message, useChat } from "ai/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { createId } from "@paralleldrive/cuid2";
 import useChatStore from "@/lib/store/chat-store";
@@ -20,10 +20,20 @@ import AvatarWrapper from "@/components/avatar-wrapper";
 import useCharacter from "@/lib/store/character-store";
 import { cn } from "@/lib/utils";
 
+import { useContext } from "react";
+import { Live2DContext } from "@/context/live2d/live2d-context";
+
+import { FishTTS } from "@/lib/tts/fish.ai";
+import { useVoice } from "@/context/voice/voice-context";
+
 export interface ChatProps {
   id: string;
   initialMessages: Message[] | [];
   isMobile?: boolean;
+}
+
+interface AudioMessage extends Message {
+  audio?: string;
 }
 
 export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
@@ -68,6 +78,86 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   const router = useRouter();
 
   const currentCharacter = useCharacter((state) => state.current_character);
+
+  // audio
+  const [audio, setAudio] = useState<string | null>(null);
+  const [audioList, setAudioList] = useState<Record<string, AudioMessage>>({});
+
+  const { controller } = useContext(Live2DContext);
+  const { voice } = useVoice();
+
+  const timbre = useCallback(async () => {
+      if (!voice?.audio) return null;
+      
+      try {
+          // Fetch the actual file and get blob directly
+          const response = await fetch(voice.audio);
+          if (!response.ok) throw new Error('Failed to fetch audio file');
+          
+          // Get blob and create File object
+          const blob = await response.blob();
+          return new File([blob], `${voice.speaker_id}.wav`, { type: 'audio/wav' });
+      } catch (error) {
+          console.error('Failed to load audio file:', error);
+          return null;
+      }
+  }, [voice?.speaker_id]);
+
+  const tts = new FishTTS({
+      apiKey: process.env.FISH_API_KEY,
+      baseUrl: "http://127.0.0.1:8080/v1/tts",
+      streaming: false
+  });
+
+  const play = useCallback(async (message: Message) => {
+      if (!voice?.speaker_id) {
+        toast.error("No voice selected");
+        return
+      };
+      if (!audioList[message.id]?.audio) {      
+          // Get the reference audio file as blob
+          const referenceFile = await timbre();
+          if (!referenceFile) {
+              toast.error('Failed to get reference audio file');
+              return 
+          }
+
+          const content = message.content.replace(/<think>[\s\S]*?(?:<\/think>|$)/g, '').trim()
+
+          console.log(`voice:${voice?.speaker_id}`);
+          const response = await tts.generateSpeech({
+              text: content,
+              referenceAudio: [referenceFile],
+              referenceText: [voice?.reference_text || ""],
+              options: {
+                  format: "wav",
+                  normalize: true,
+                  chunk_length: 256,
+                  latency: "balanced",
+                  channels: 2,
+                  top_p: 0.5,
+                  temperature: 0.7,
+                  repetition_penalty: 1.2
+              }
+          });
+          if (response.status === "success" && response.data.audio) {
+              const { base64, blob } = response.data.audio;
+              setAudio(base64);
+              controller?.speak(base64);
+              setAudioList((prev)=>({
+                ...prev,
+                [message.id]: {
+                  ...message,
+                  audio: base64
+                }
+              }))
+              console.log('generate audio finished')
+          }
+      } else {
+          console.log('generated audio cached')
+          controller?.speak(audioList[message.id].audio!);
+      }
+  }, [voice?.speaker_id, audioList]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -132,7 +222,7 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   return (
     <div className="flex flex-col w-full max-w-3xl h-full">
 
-      {messages.length === 0 ? (
+      {messages.length !== 0 ? (
         <div className="flex flex-col h-full w-full items-center gap-4 justify-center">
             <div className="flex flex-row items-center gap-2">
                 <AvatarWrapper
@@ -161,6 +251,8 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
             messages={messages}
             isLoading={isLoading}
             loadingSubmit={loadingSubmit}
+            play={play}
+            reload={reload}
           />
           <ChatInput
             input={input}
