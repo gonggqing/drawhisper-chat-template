@@ -1,3 +1,5 @@
+"use client";
+
 import useCharacter, { Character } from "./store/character-store";
 
 const name = "神里绫华";
@@ -39,27 +41,32 @@ const memory = `
 
 
 const settings = {
+    id: "default_character",
     name,
     description,
     personality,
     memory,
-    avatar: "/image/ayaka.jpg",
+    avatar: "/image/ayaka.png",
     initial_message: "很多人因为我是「白鹭公主」，是社奉行神里家的大小姐而敬重我。他们所敬重的，只是我所身处的地位，与绫华我是怎样的人并无关系…所以我想，能真正走近我的，或许只有…",
 }
 
 export function defaultCharacter(): Character {
     const createCharacter = useCharacter.getState().createCharacter;
-    const id = createCharacter(
-        settings.name,
-        settings.avatar,
-        settings.description,
-        settings.memory,
-        settings.personality,
-        settings.initial_message
-    )
-    return {
+    const getCharacterById = useCharacter.getState().getCharacterById;
+    const character = getCharacterById(settings.id);
+    if (!character) {
+        createCharacter(
+            settings.id,
+            settings.name,
+            settings.avatar,
+            settings.description,
+            settings.memory,
+            settings.personality,
+            settings.initial_message
+        );
+    }
+    return character ?? {
         ...settings,
-        id,
     };
 }
 

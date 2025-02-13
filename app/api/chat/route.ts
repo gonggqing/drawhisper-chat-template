@@ -66,16 +66,25 @@ export async function POST(
             description = character.description;
             personality = character.personality;
             memory = character.memory;
-
-            console.log("[INFO] Character selected:", character);
         }
 
-        const messageContent: UserContent = [{ type: 'text', text: prompt.content }];
+        console.log("[INFO] Character selected:", character?.name);
 
-         // Add images if they exist
-        data?.images?.forEach((imageUrl: string) => {
-            const image = new URL(imageUrl);
-            messageContent.push({ type: 'image', image });
+        const messageContent = new HumanMessage({
+            content: [
+                {
+                    type: 'text',
+                    text: prompt.content
+                },
+                // add images if they exist
+                data?.images && 
+                data?.images.map((imageUrl: string) => ({
+                    type: 'image_url',
+                    image_url: {
+                        url: new URL(imageUrl)
+                    }
+                }))
+            ]
         });
 
         console.time("[INFO] Initialize LLM and Prompt")

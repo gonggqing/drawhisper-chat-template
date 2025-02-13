@@ -17,8 +17,10 @@ import Avatar from "@/components/avatar-wrapper"
 import useUser from "@/lib/store/user-store";
 import { cn } from "@/lib/utils";
 import { WaterBubble } from "../ui/water-bubble";
-import useCharacter from "@/lib/store/character-store";
+import useCharacter, { Character } from "@/lib/store/character-store";
+
 export type ChatMessageProps = {
+  character: Character | null;
   message: Message;
   isLast: boolean;
   isLoading: boolean | undefined;
@@ -40,12 +42,11 @@ const MOTION_CONFIG = {
   },
 };
 
-function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessageProps) {
+function ChatMessage({ character, message, isLast, isLoading, reload, play }: ChatMessageProps) {
   
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [generating, setGenerating] = useState<boolean>(false);
   const avatar = useUser((state) => state.getUser()?.avatar);
-  const character = useCharacter((state) => state.currentCharacter);
   // Extract "think" content from Deepseek R1 models and clean message (rest) content
   const { thinkContent, cleanContent } = useMemo(() => {
     const getThinkContent = (content: string) => {
@@ -167,7 +168,7 @@ function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessagePr
 
   return (
     <motion.div {...MOTION_CONFIG} className="flex flex-col gap-2 whitespace-pre-wrap">
-      {message.role === "assistant" && (
+      {message.role === "assistant" && thinkContent && (
         <ThinkingBubble variant="received" className="ml-12 opacity-95 backdrop-blur-sm ">
           {renderThinkingProcess()}
         </ThinkingBubble>

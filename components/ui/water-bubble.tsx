@@ -8,8 +8,8 @@ const waterBubbleVariant = cva(
   {
     variants: {
       variant: {
-        loading: "animate",
-        finished: "opacity-90",
+        loading: "opacity-90",
+        finished: "opacity-100",
       },
     },
   },
@@ -22,8 +22,8 @@ const WaterBubble = React.forwardRef<HTMLDivElement, WaterBubbleProps>(
   ({ className, variant, ...props }, ref) => (
     <div className={cn(waterBubbleVariant({ className, variant }))} ref={ref} {...props} >
         <div className="water-bubble" style={{ 
-          animationPlayState: variant === "loading" ? "running" : "paused",
-          animation: variant === "loading" ? "animate 2s ease-in-out infinite" : "animate 2s ease-in-out",
+          animationPlayState: variant === "finished" ? "paused" : "running",
+          animation: variant === "finished" ? "animate 2s ease-in-out " : "animate 2s ease-in-out infinite",
           }} 
         />
     </div>

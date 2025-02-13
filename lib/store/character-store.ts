@@ -20,7 +20,7 @@ interface State {
 }
 
 interface Actions {
-    createCharacter: (name: string, avatar: string, description: string, memory: string | null, personality: string, initial_message: string) => string;
+    createCharacter: (id: string | undefined, name: string, avatar: string, description: string, memory: string | null, personality: string, initial_message: string) => string;
     getCharacterById: (id: string) => Character | null;
     getCharacters: () => State["characters"];
     setCurrentCharacter: (character: Character) => void;
@@ -35,8 +35,10 @@ const useCharacterStore = create<State & Actions>()(
             currentCharacter: null,
             characters: {},
 
-            createCharacter: (name, avatar, description, memory, personality, initial_message) => {
-                const id = createId();
+            createCharacter: (id, name, avatar, description, memory, personality, initial_message) => {
+                if (!id) {
+                    id = createId();
+                }
                 const newCharacter: Character = {
                     id,
                     name,

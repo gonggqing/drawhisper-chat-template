@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { currentCharacter } from "../character";
 
-interface ChatSession {
+export interface ChatSession {
   messages: Message[];
   createdAt: string;
   characterId: string;

@@ -8,9 +8,13 @@ import { Attachment, ChatRequestOptions, generateId } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import useChatStore from "@/lib/store/chat-store";
+import useChatStore, { ChatSession } from "@/lib/store/chat-store";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Check, Copy, Play } from "@phosphor-icons/react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import AvatarWrapper from "@/components/avatar-wrapper";
 
@@ -22,6 +26,8 @@ import { Live2DContext } from "@/context/live2d/live2d-context";
 
 import { FishTTS } from "@/lib/tts/fish.ai";
 import { useVoice } from "@/context/voice/voice-context";
+
+import { ChatBubble, ChatBubbleMessage, ChatBubbleActionWrapper } from "../ui/chat/chat-bubble";
 
 export interface ChatProps {
   id: string;
@@ -84,24 +90,36 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   const selectedModel = useChatStore((state) => state.selectedModel);
   const saveMessages = useChatStore((state) => state.saveMessages);
   const getMessagesById = useChatStore((state) => state.getMessagesById);
+  const getChatById = useChatStore((state) => state.getChatById);
   const router = useRouter();
 
   const currentCharacter = useCharacter((state) => state.currentCharacter);
+  const getCharacterById = useCharacter((state) => state.getCharacterById);
 
   const [character, setCharacter] = useState<Character | null>(null);
+  const [chat, setChat] = useState<ChatSession | null>(null);
 
   // audio
   const [audio, setAudio] = useState<string | null>(null);
+  const [generating, setGenerating] = useState<boolean>(false);
   const [audioList, setAudioList] = useState<Record<string, AudioMessage>>({});
 
   const { controller } = useContext(Live2DContext);
   const { voice } = useVoice();
 
   useEffect(() => {
-    if (currentCharacter) {
-      setCharacter(currentCharacter);
+    const currentChat = getChatById(id);
+    console.log(`[ChatInfo] currentChat:${currentChat}`);
+    if (currentChat) {
+      setChat(currentChat);
+      const c = getCharacterById(currentChat.characterId);
+      if (c) {
+        setCharacter(c);
+      }
+      console.log(`[ChatInfo] character: :${currentChat.characterId} ${c}`);
+      console.log(`[ChatInfo] Current Character:${currentCharacter}`);
     }
-  }, [currentCharacter]);
+  }, [id]);
 
   const timbre = useCallback(async () => {
       if (!voice?.audio) return null;
@@ -140,7 +158,10 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
           }
 
           const content = message.content.replace(/<think>[\s\S]*?(?:<\/think>|$)/g, '').trim()
-
+          if (content.length === 0) {
+            toast.error("No content to generate speech");
+            return;
+          }
           console.log(`voice:${voice?.speaker_id}`);
           const response = await tts.generateSpeech({
               text: content,
@@ -176,6 +197,17 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
       }
   }, [voice?.speaker_id, audioList]);
 
+  const handlePlay = (message: Message) => {
+    setGenerating(true);
+    try {
+      play(message);
+    } catch (error) {
+      console.error('Failed to play audio:', error);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     window.history.replaceState({}, "", `/c/${id}`);
@@ -203,16 +235,14 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
     const requestOptions: ChatRequestOptions = {
       body: {
         selectedModel: selectedModel,
+        character: character ? character : currentCharacter,
       },
       ...(base64Images && {
         data: {
           images: base64Images,
         },
-      ...(character && {
-        character: character,
       }),
-        experimental_attachments: attachments,
-      }),
+      experimental_attachments: attachments,
     };
 
     handleSubmit(e, requestOptions);
@@ -239,22 +269,45 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
     content: currentCharacter?.initial_message || "How can I help you today?"
   } satisfies Message;
 
+  const renderActionButtons = () => (
+    (
+      <div className="pt-2 flex gap-2 items-center text-muted-foreground">
+          <Button
+            onClick={() => handlePlay(initial_message)}
+            variant="ghost"
+            size="icon"
+            disabled={generating}
+            className={cn(
+              "h-4 w-4 rounded-full hover:bg-transparent hover:text-foreground",
+            )}
+          >
+            <Play weight="fill" className={cn(
+              "w-3.5 h-3.5 transition-all",
+              generating && "animate-pulse"
+            )} />
+          </Button>
+      </div>
+    )
+  );
+
   return (
     <div className="flex flex-col min-w-[672px] h-full">
 
       {messages.length === 0 ? (
         <div className="flex flex-col h-full w-full items-center gap-4 justify-center">
-            <div className="flex flex-row items-center gap-2">
-                <AvatarWrapper
-                    src={currentCharacter?.avatar || "/image/radien.jpg"}
-                    fallback={currentCharacter?.name || "AI"}
-                />
-                <Card className={cn(
-                    "max-w-xs min-w-[224px] min-h-[40px] inline-flex flex-wrap p-2 items-center shadow-none relative rounded-lg border-none",
-                    "bg-[color:#ffc2d1] self-start rounded-bl-none",
-                    )}>
-                        <p className="text-sm font-mono text-primary">{initial_message.content}</p>
-                </Card>
+            <div className="flex flex-row items-center justify-center gap-2">
+                <ChatBubble variant={"received"}>
+                  <AvatarWrapper
+                      src={currentCharacter?.avatar || "/image/radien.jpg"}
+                      fallback={currentCharacter?.name || "AI"}
+                  />
+                  <ChatBubbleMessage className={cn(
+                    "bg-[color:#ffc2d1]",
+                  )}>
+                    <Markdown remarkPlugins={[remarkGfm]}>{initial_message.content}</Markdown>
+                    {renderActionButtons()}
+                  </ChatBubbleMessage>
+                </ChatBubble>
             </div>
             <ChatInput
                 input={input}
@@ -268,6 +321,7 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
       ) : (
         <div className="flex flex-col w-full gap-4 space-y-2">
           <ChatList
+            chatId={id}
             messages={messages}
             isLoading={isLoading}
             loadingSubmit={loadingSubmit}

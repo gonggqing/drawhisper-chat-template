@@ -109,7 +109,7 @@ export const CharacterSetting = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" className="w-full h-12 font-bold justify-start">
+                <Button variant="ghost" className="w-full h-12 font-bold justify-start bg-sidebar-accent rounded-lg">
                    <p>New Character </p> <Plus size={24} weight="bold" />
                 </Button>
             </DialogTrigger>

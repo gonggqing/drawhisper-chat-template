@@ -12,7 +12,7 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { FinnTheHuman, Info, TrashSimple } from "@phosphor-icons/react";
+import { FinnTheHuman, Info, Plus, TrashSimple } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { UserForm } from "@/components/forms/user-form";
@@ -26,11 +26,15 @@ import useChat from "@/lib/store/chat-store";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/avatar-wrapper";
+import { useParams } from "next/navigation";
+
+import { defaultCharacter } from "@/lib/character";
 
 export const AppSidebar = () => {
     const user = useUser((state) => state.getUser());
     const [username, setUsername] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
+    const { id } = useParams() as { id: string | undefined };
 
     const chats = useChat((state) => state.chats);
     const setCurrentChatId = useChat((state) => state.setCurrentChatId);
@@ -75,6 +79,12 @@ export const AppSidebar = () => {
         }
     }, [character.characters]);
 
+    useEffect(() => {
+        if (!currentCharacter) {
+            character.setCurrentCharacter(defaultCharacter());
+        }
+    }, []);
+
     const character_tip = "You can create a character's basic information and use it in any chat."
 
     return (
@@ -88,16 +98,23 @@ export const AppSidebar = () => {
                     <SidebarGroupLabel>
                         Chats 
                     </SidebarGroupLabel>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <Button onClick={() => router.push("/")} variant="ghost" className="w-1/2 h-12 font-bold justify-start bg-sidebar-accent rounded-full">
+                                <p>New</p> <Plus size={24} weight="bold" />
+                            </Button>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
                     <SidebarMenu className="max-h-[448px] overflow-y-auto">
-                        {Object.entries(chats).map(([id, chat]) => {
+                        {Object.entries(chats).map(([chatId, chat]) => {
                             const c = getCharacterById(chat.characterId);
                             return (
-                            <SidebarMenuItem key={id} className="relative group flex flex-row items-center gap-2 p-2">
+                            <SidebarMenuItem key={chatId} className="relative group flex flex-row items-center gap-2 p-2">
                                 <SidebarMenuButton 
                                     className={cn("h-12 w-full items-center justify-between", 
-                                        id === currentCharacter?.id && "bg-sidebar-accent shadow-inner"
+                                        chatId === id && "bg-[color:#d7e3fc] shadow-inner"
                                     )}
-                                    onClick={() => handleChangeChat(id)}
+                                    onClick={() => handleChangeChat(chatId)}
                                 >
                                     <Avatar src={c?.avatar || "/image/radien.jpg"} fallback={c?.name.charAt(0) || "A"} />
                                     <span className="flex flex-row items-center gap-2">
@@ -109,7 +126,7 @@ export const AppSidebar = () => {
                                         className="transition-all duration-300 hover:opacity-100 opacity-0 hover:bg-red-400 hover:text-white rounded-full h-8 w-8 p-1.5 flex items-center justify-center" 
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            handleDeleteChat(id);
+                                            handleDeleteChat(chatId);
                                         }}
                                     >
                                         <TrashSimple size={18} weight="fill" />
@@ -132,12 +149,11 @@ export const AppSidebar = () => {
                             <CharacterSetting />
                         </SidebarMenuItem>
                     </SidebarMenu>
-                    <Separator className="border-sidebar-border"/>
                     <SidebarMenu className="max-h-[300px] overflow-y-auto">
                         {characters.map((character) => (
                             <SidebarMenuItem key={character.id} className="relative group flex flex-row items-center gap-2 p-2">
                                 <SidebarMenuButton 
-                                    className={cn("h-12 w-full items-center justify-between", currentCharacter?.id === character.id && "bg-sidebar-accent shadow-inner")}
+                                    className={cn("h-12 w-full items-center justify-between", currentCharacter?.id === character.id && "bg-[color:#d7e3fc] shadow-inner")}
                                     onClick={() => handleCharacterClick(character)}
                                 >
                                     <span className="flex flex-row items-center gap-2">
