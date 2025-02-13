@@ -1,10 +1,12 @@
 import { CoreMessage, generateId, Message } from "ai";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { currentCharacter } from "../character";
 
 interface ChatSession {
   messages: Message[];
   createdAt: string;
+  characterId: string;
 }
 
 interface State {
@@ -54,6 +56,7 @@ const useChatStore = create<State & Actions>()(
               [chatId]: {
                 messages: [...messages],
                 createdAt: existingChat?.createdAt || new Date().toISOString(),
+                characterId: existingChat?.characterId || currentCharacter().id,
               },
             },
           };

@@ -13,7 +13,6 @@ import {
     SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { FinnTheHuman, Info, TrashSimple } from "@phosphor-icons/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { UserForm } from "@/components/forms/user-form";
@@ -22,32 +21,47 @@ import { TooltipWrapper } from "@/components/tooltip-wrapper";
 
 import { CharacterSetting } from "@/components/forms/character-form";
 import useUser from "@/lib/store/user-store";
-import useCharacter, { CharacterState } from "@/lib/store/character-store";
+import useCharacter, { Character } from "@/lib/store/character-store";
+import useChat from "@/lib/store/chat-store";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Avatar from "@/components/avatar-wrapper";
 
 export const AppSidebar = () => {
     const user = useUser((state) => state.getUser());
     const [username, setUsername] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
 
+    const chats = useChat((state) => state.chats);
+    const setCurrentChatId = useChat((state) => state.setCurrentChatId);
+    const handleDeleteChat = useChat((state) => state.handleDelete);
+
     const character = useCharacter((state) => state);
-    const currentCharacter = useCharacter((state) => state.current_character);
+    const currentCharacter = useCharacter((state) => state.currentCharacter);
+    const getCharacterById = useCharacter((state) => state.getCharacterById);
 
-    const [characters, setCharacters] = useState<CharacterState[]>([]);
+    const [characters, setCharacters] = useState<Character[]>([]);
 
-    const handleCharacterClick = (target_character: CharacterState) => {
+    const router = useRouter();
+
+    const handleCharacterClick = (target_character: Character) => {
         if (currentCharacter?.id !== target_character.id) {
             character.setCurrentCharacter(target_character);
         }
     }
 
-    const handleDeleteCharacter = (target_character: CharacterState) => {
+    const handleDeleteCharacter = (target_character: Character) => {
         try {
             character.deleteCharacter(target_character.id);
             toast.success("Character deleted successfully");
         } catch (error) {
             toast.error("Failed to delete character");
         }
+    }
+
+    function handleChangeChat(chatId: string) {
+        setCurrentChatId(chatId);
+        router.push(`/c/${chatId}`);
     }
 
     useEffect(() => {
@@ -74,13 +88,36 @@ export const AppSidebar = () => {
                     <SidebarGroupLabel>
                         Chats 
                     </SidebarGroupLabel>
-                    {/* <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton>
-                                Local Chat
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu> */}
+                    <SidebarMenu className="max-h-[448px] overflow-y-auto">
+                        {Object.entries(chats).map(([id, chat]) => {
+                            const c = getCharacterById(chat.characterId);
+                            return (
+                            <SidebarMenuItem key={id} className="relative group flex flex-row items-center gap-2 p-2">
+                                <SidebarMenuButton 
+                                    className={cn("h-12 w-full items-center justify-between", 
+                                        id === currentCharacter?.id && "bg-sidebar-accent shadow-inner"
+                                    )}
+                                    onClick={() => handleChangeChat(id)}
+                                >
+                                    <Avatar src={c?.avatar || "/image/radien.jpg"} fallback={c?.name.charAt(0) || "A"} />
+                                    <span className="flex flex-row items-center gap-2">
+                                        <span className="text-sm font-medium">
+                                            {c?.name + `:${chat.messages[0].content}`}
+                                        </span>
+                                    </span>
+                                    <div 
+                                        className="transition-all duration-300 hover:opacity-100 opacity-0 hover:bg-red-400 hover:text-white rounded-full h-8 w-8 p-1.5 flex items-center justify-center" 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteChat(id);
+                                        }}
+                                    >
+                                        <TrashSimple size={18} weight="fill" />
+                                    </div>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        )})}
+                    </SidebarMenu>
                 </SidebarGroup>
                 <Separator className="border-sidebar-border"/>
                 <SidebarGroup>
@@ -104,16 +141,7 @@ export const AppSidebar = () => {
                                     onClick={() => handleCharacterClick(character)}
                                 >
                                     <span className="flex flex-row items-center gap-2">
-                                        <Avatar>
-                                            <AvatarImage 
-                                                src={character.avatar || "/image/radien.jpg"} 
-                                                alt={character.name}
-                                                className="object-cover w-10 h-10 rounded-full"
-                                            />
-                                            <AvatarFallback>
-                                                {character.name.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <Avatar src={character.avatar || "/image/radien.jpg"}  fallback={character.name.charAt(0)} />
                                         <p className="text-sm font-medium">{character.name}</p>
                                     </span>
                                     <div 
@@ -132,10 +160,7 @@ export const AppSidebar = () => {
             <SidebarFooter>
                 <div className="flex flex-row p-2 w-full justify-between items-center rounded-md bg-sidebar-accent">
                     <div className="flex flex-row gap-2 items-center">
-                        <Avatar>
-                            <AvatarImage src={avatar || "/image/radien.jpg"} />
-                            <AvatarFallback>U</AvatarFallback>
-                        </Avatar>
+                        <Avatar src={avatar || "/image/radien.jpg"} fallback={username?.charAt(0) || "U"} />
                         <p className="text-sm font-medium">{username || "User"}</p>
                     </div>
                     <UserForm />

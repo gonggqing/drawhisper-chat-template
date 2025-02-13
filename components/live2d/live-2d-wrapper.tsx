@@ -9,7 +9,7 @@ const Live2D = dynamic(() => import("@/components/live2d/canvas"), {
     ssr: false,
 });
 
-export default function Live2DWrapper() {
+export default function Live2DWrapper({children} : {children: React.ReactNode}) {
     const [isCoreDone, setIsCoreDone] = useState(false);
     const [isLive2DDone, setIsLive2DDone] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export default function Live2DWrapper() {
                 onLoad={handleLive2DLoad}
                 onError={() => handleScriptError("Live2D library")}
             />
-            {isLoaded && <Live2D />}
+            {isLoaded && <Live2D>{children}</Live2D>}
         </div>
     );
 }

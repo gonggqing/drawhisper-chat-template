@@ -24,7 +24,8 @@ const WaterBubble = React.forwardRef<HTMLDivElement, WaterBubbleProps>(
         <div className="water-bubble" style={{ 
           animationPlayState: variant === "loading" ? "running" : "paused",
           animation: variant === "loading" ? "animate 2s ease-in-out infinite" : "animate 2s ease-in-out",
-          }} />
+          }} 
+        />
     </div>
   ),
 );

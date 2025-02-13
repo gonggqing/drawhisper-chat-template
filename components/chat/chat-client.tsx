@@ -8,11 +8,8 @@ import { Attachment, ChatRequestOptions, generateId } from "ai";
 import { Message, useChat } from "ai/react";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { createId } from "@paralleldrive/cuid2";
 import useChatStore from "@/lib/store/chat-store";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { MessageItem } from "./message";
 import { Card } from "@/components/ui/card";
 
 import AvatarWrapper from "@/components/avatar-wrapper";
@@ -36,6 +33,16 @@ interface AudioMessage extends Message {
   audio?: string;
 }
 
+interface Character {
+    id: string;
+    name: string;
+    avatar: string | null;
+    initial_message: string | null;
+    description: string | null;
+    personality: string | null;
+    memory: string | null;
+}
+
 export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   const {
     messages,
@@ -48,6 +55,8 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
     setInput,
     reload,
   } = useChat({
+    streamProtocol: 'data',
+    api: '/api/chat',
     id,
     initialMessages,
     onResponse: (response) => {
@@ -77,7 +86,9 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   const getMessagesById = useChatStore((state) => state.getMessagesById);
   const router = useRouter();
 
-  const currentCharacter = useCharacter((state) => state.current_character);
+  const currentCharacter = useCharacter((state) => state.currentCharacter);
+
+  const [character, setCharacter] = useState<Character | null>(null);
 
   // audio
   const [audio, setAudio] = useState<string | null>(null);
@@ -85,6 +96,12 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
 
   const { controller } = useContext(Live2DContext);
   const { voice } = useVoice();
+
+  useEffect(() => {
+    if (currentCharacter) {
+      setCharacter(currentCharacter);
+    }
+  }, [currentCharacter]);
 
   const timbre = useCallback(async () => {
       if (!voice?.audio) return null;
@@ -191,6 +208,9 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
         data: {
           images: base64Images,
         },
+      ...(character && {
+        character: character,
+      }),
         experimental_attachments: attachments,
       }),
     };
@@ -220,9 +240,9 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   } satisfies Message;
 
   return (
-    <div className="flex flex-col w-full max-w-3xl h-full">
+    <div className="flex flex-col min-w-[672px] h-full">
 
-      {messages.length !== 0 ? (
+      {messages.length === 0 ? (
         <div className="flex flex-col h-full w-full items-center gap-4 justify-center">
             <div className="flex flex-row items-center gap-2">
                 <AvatarWrapper
@@ -246,13 +266,24 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
             />
         </div>
       ) : (
-        <>
+        <div className="flex flex-col w-full gap-4 space-y-2">
           <ChatList
             messages={messages}
             isLoading={isLoading}
             loadingSubmit={loadingSubmit}
             play={play}
-            reload={reload}
+            reload={async () => {
+              removeLatestMessage();
+
+              const requestOptions: ChatRequestOptions = {
+                body: {
+                  selectedModel: selectedModel,
+                },
+              };
+
+              setLoadingSubmit(true);
+              return reload(requestOptions);
+            }}
           />
           <ChatInput
             input={input}
@@ -262,7 +293,7 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
             stop={handleStop}
             setInput={setInput}
           />
-        </>
+        </div>
       )}
     </div>
   );

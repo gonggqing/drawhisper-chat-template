@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { ModelSelect } from "@/components/model/model-select";
+import Live2DWrapper from "@/components/live2d/live-2d-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +28,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
+          >
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="gap-4 row-start-2 items-center sm:items-start font-[family-name:var(--font-geist-sans)] overflow-hidden">
+                {/* Header */}
+                <div className="w-screen h-14 sticky z-50 top-0 bg-sidebar border-b border-sidebar-border flex items-center justify-start px-2 ">
+                  <SidebarTrigger className="hover:bg-[color:#edf2fb] transition-all rounded-full duration-300" />
+                  <ModelSelect />
+                </div>
+                {/* Main Content */}
+                <div className="w-full h-full items-center justify-start min-h-screen p-4">
+                  <div className="w-full h-full flex justify-start items-start">
+                    <Live2DWrapper>
+                      {children}
+                    </Live2DWrapper>
+                  </div>
+                </div>
+            </main>
+          </SidebarProvider>
+        </body>
     </html>
   );
 }

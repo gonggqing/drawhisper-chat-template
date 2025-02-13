@@ -79,8 +79,8 @@ export default function ChatInput({
   }, [inputRef]);
 
   return (
-    <div className="px-4 pb-7 flex justify-between w-full items-center relative ">
-      <AnimatePresence initial={false}>
+    <div className="px-4 pb-2 flex justify-between w-full items-center relative">
+      <AnimatePresence initial={false} mode="popLayout">
         <form
           onSubmit={handleSubmit}
           className="w-full items-center flex flex-col rounded-lg border-none bg-accent/80"
@@ -92,7 +92,7 @@ export default function ChatInput({
             onChange={handleInputChange}
             name="message"
             placeholder={!isListening ? "Enter your prompt here" : "Listening"}
-            className="flex-1 bg-accent/80 text-sm w-[572px] border-none shadow-none resize-none focus-visible:ring-accent font-mono"
+            className="bg-accent/80 text-sm w-full border-none shadow-none resize-none focus-visible:ring-accent font-mono"
             rows={2}
           />
 
@@ -154,7 +154,9 @@ export default function ChatInput({
                         type="submit"
                         disabled={
                         isLoading ||
-                        !input.trim()
+                        !input.trim() ||
+                        !isListening ||
+                        !selectedModel
                         }
                     >
                         <PaperPlaneRight weight="fill" size={24} />

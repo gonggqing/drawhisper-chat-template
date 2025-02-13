@@ -4,7 +4,7 @@ import { Message } from "ai";
 import { createId } from '@paralleldrive/cuid2';
 
 
-export interface CharacterState {
+export interface Character {
     id: string;
     name: string;
     avatar: string | null;
@@ -15,29 +15,29 @@ export interface CharacterState {
 }
 
 interface State {
-    current_character: CharacterState | null;
-    characters: Record<string, CharacterState>;
+    currentCharacter: Character | null;
+    characters: Record<string, Character>;
 }
 
 interface Actions {
     createCharacter: (name: string, avatar: string, description: string, memory: string | null, personality: string, initial_message: string) => string;
-    getCharacterById: (id: string) => CharacterState | null;
+    getCharacterById: (id: string) => Character | null;
     getCharacters: () => State["characters"];
-    setCurrentCharacter: (character: CharacterState) => void;
-    getCurrentCharacter: () => CharacterState | null;
+    setCurrentCharacter: (character: Character) => void;
+    getCurrentCharacter: () => Character | null;
     deleteCharacter: (id: string) => void;
-    updateCharacter: (id: string, updates: Partial<Omit<CharacterState, 'id'>>) => void;
+    updateCharacter: (id: string, updates: Partial<Omit<Character, 'id'>>) => void;
 }
 
 const useCharacterStore = create<State & Actions>()(
     persist(
         (set, get) => ({
-            current_character: null,
+            currentCharacter: null,
             characters: {},
 
             createCharacter: (name, avatar, description, memory, personality, initial_message) => {
                 const id = createId();
-                const newCharacter: CharacterState = {
+                const newCharacter: Character = {
                     id,
                     name,
                     avatar,
@@ -64,16 +64,16 @@ const useCharacterStore = create<State & Actions>()(
 
             getCharacters: () => get().characters,
 
-            getCurrentCharacter: () => get().current_character,
+            getCurrentCharacter: () => get().currentCharacter,
 
-            setCurrentCharacter: (character) => set({ current_character: character }),
+            setCurrentCharacter: (character) => set({ currentCharacter: character }),
 
             deleteCharacter: (id) => {
                 set((state) => {
                     const { [id]: deleted, ...rest } = state.characters;
                     return { 
                         characters: rest,
-                        current_character: state.current_character?.id === id ? null : state.current_character
+                        currentCharacter: state.currentCharacter?.id === id ? null : state.currentCharacter
                     };
                 });
             },
@@ -93,9 +93,9 @@ const useCharacterStore = create<State & Actions>()(
                             ...state.characters,
                             [id]: updatedCharacter,
                         },
-                        current_character: state.current_character?.id === id 
+                        currentCharacter: state.currentCharacter?.id === id 
                             ? updatedCharacter 
-                            : state.current_character,
+                            : state.currentCharacter,
                     };
                 });
             },

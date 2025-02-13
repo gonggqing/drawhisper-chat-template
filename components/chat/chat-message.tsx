@@ -17,7 +17,7 @@ import Avatar from "@/components/avatar-wrapper"
 import useUser from "@/lib/store/user-store";
 import { cn } from "@/lib/utils";
 import { WaterBubble } from "../ui/water-bubble";
-
+import useCharacter from "@/lib/store/character-store";
 export type ChatMessageProps = {
   message: Message;
   isLast: boolean;
@@ -45,6 +45,7 @@ function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessagePr
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [generating, setGenerating] = useState<boolean>(false);
   const avatar = useUser((state) => state.getUser()?.avatar);
+  const character = useCharacter((state) => state.currentCharacter);
   // Extract "think" content from Deepseek R1 models and clean message (rest) content
   const { thinkContent, cleanContent } = useMemo(() => {
     const getThinkContent = (content: string) => {
@@ -96,9 +97,9 @@ function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessagePr
 
   const renderThinkingProcess = () => (
     thinkContent && message.role === "assistant" && (
-      <div className="mb-1 text-sm relative">
-        <WaterBubble className="absolute top-1 left-1" variant="loading" />
-        <div className="mt-1 text-muted-foreground pl-8" >
+      <div className="mb-1 text-sm relative max-h-[192px] overflow-y-auto">
+        <WaterBubble className="absolute top-1 left-1" variant="finished" />
+        <div className="mt-1 text-muted-foreground pl-8 " >
           <Markdown remarkPlugins={[remarkGfm]}>{thinkContent}</Markdown>
         </div>
       </div>
@@ -119,7 +120,7 @@ function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessagePr
 
   const renderActionButtons = () => (
     message.role === "assistant" && (
-      <div className="pt-2 flex gap-1 items-center text-muted-foreground">
+      <div className="pt-2 flex gap-2 items-center text-muted-foreground">
         {!isLoading && (
           <Button
             onClick={handleCopy}
@@ -167,12 +168,15 @@ function ChatMessage({ message, isLast, isLoading, reload, play }: ChatMessagePr
   return (
     <motion.div {...MOTION_CONFIG} className="flex flex-col gap-2 whitespace-pre-wrap">
       {message.role === "assistant" && (
-        <ThinkingBubble variant="received" className="ml-12 opacity-95 backdrop-blur-sm">
+        <ThinkingBubble variant="received" className="ml-12 opacity-95 backdrop-blur-sm ">
           {renderThinkingProcess()}
         </ThinkingBubble>
       )}
       <ChatBubble variant={message.role === "user" ? "sent" : "received"}>
-        <Avatar src={avatar || "/image/radien.jpg"} fallback={"U"} />
+        <Avatar 
+          src={message.role === "user" ? avatar || "/image/radien.jpg" : character?.avatar || "/image/radien.jpg"} 
+          fallback={message.role === "user" ? "U" : character?.name || "AI"} 
+        />
         <ChatBubbleMessage className={cn(
           message.role === "assistant" && "bg-[color:#ffc2d1]",
           message.role === "user" && "bg-[color:#bde0fe]",

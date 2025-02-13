@@ -1,22 +1,16 @@
 import Live2DWrapper from "@/components/live2d/live-2d-wrapper";
 import { InitTTSModel } from "@/components/voice/init-tts";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { ChatClient } from "@/components/chat/chat-client";
+import { createId } from "@paralleldrive/cuid2";
+
 export default function Home() {
+  const id = createId();
   return (
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="gap-4 row-start-2 items-center sm:items-start font-[family-name:var(--font-geist-sans)]">
-              <div className="w-screen h-14 sticky z-50 top-0 bg-sidebar border-b border-sidebar-border flex items-center justify-start px-2">
-                <SidebarTrigger className="hover:bg-[color:#edf2fb] transition-all rounded-full duration-300" />
-              </div>
-            <div className="w-full h-fullitems-center justify-start min-h-screen sm:p-8 ">
-              <InitTTSModel />
-              <div className="w-full h-full flex justify-start items-start">
-                <Live2DWrapper />
-              </div>
+        <div>
+          <InitTTSModel />
+          <div className="absolute -translate-x-1/2 left-1/2 bottom-2 flex flex-col gap-2 select-none">
+            <ChatClient initialMessages={[]} id={id} isMobile={false} />
           </div>
-        </main>
-      </SidebarProvider>
+        </div>
   );
 }

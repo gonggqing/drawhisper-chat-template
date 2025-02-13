@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { Application, Ticker, DisplayObject } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 // import { draggable } from "@/lib/tools/dragging";
 import { focus } from "@/lib/tools/tap-focus";
@@ -16,6 +16,9 @@ import { ChatClient } from "@/components/chat/chat-client";
 import { VoiceProvider } from "@/context/voice/voice-provider";
 import { VoiceType, useVoice } from "@/context/voice/voice-context";
 import { CaretDown } from "@phosphor-icons/react";
+import { createId } from "@paralleldrive/cuid2";
+import { ChatContext } from "@/context/chat/chat-context";
+import { useParams } from "next/navigation";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -37,7 +40,7 @@ export interface CanvasConfig {
   }
 }
 
-export default function Live2D() {
+export default function Live2D({ children }: { children: React.ReactNode }) {
   const canvasContainerRef = useRef<HTMLCanvasElement>(null);
   const gyroCanvasRef = useRef<HTMLCanvasElement>(null);
   const [showGyroscope, setShowGyroscope] = useState(false);
@@ -56,6 +59,8 @@ export default function Live2D() {
   const [voice, setVoice] = useState<VoiceType | null>(null);
   const { voice: currentVoice, updateVoice } = useVoice();
 
+  const { chat } = useContext(ChatContext);
+  const { id } = useParams() as { id: string | undefined };
   const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
       bg_color: "#fff",
@@ -295,9 +300,7 @@ export default function Live2D() {
             )}
           </div>
           <div className="w-full h-full flex justify-center items-center relative">
-            <div className="absolute -translate-x-1/2 left-1/2 bottom-2 flex flex-col gap-2 select-none">
-              <ChatClient initialMessages={[]} id="1" isMobile={false} />
-            </div>
+            {children}
           </div>
         </div>
         </VoiceProvider>
