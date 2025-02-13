@@ -295,21 +295,21 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
 
       {messages.length === 0 ? (
         <div className="flex flex-col h-full w-full items-center gap-4 justify-center">
-            <div className="flex flex-row items-center justify-center gap-2">
-                <ChatBubble variant={"received"}>
-                  <AvatarWrapper
-                      src={currentCharacter?.avatar || "/image/radien.jpg"}
-                      fallback={currentCharacter?.name || "AI"}
-                  />
-                  <ChatBubbleMessage className={cn(
-                    "bg-[color:#ffc2d1]",
-                  )}>
-                    <Markdown remarkPlugins={[remarkGfm]}>{initial_message.content}</Markdown>
-                    {renderActionButtons()}
-                  </ChatBubbleMessage>
-                </ChatBubble>
-            </div>
-            <ChatInput
+            <ChatBubble variant={"received"}>
+              <AvatarWrapper
+                  src={currentCharacter?.avatar || "/image/radien.jpg"}
+                  fallback={currentCharacter?.name || "AI"}
+              />
+              <ChatBubbleMessage className={cn(
+                "bg-[color:#ffc2d1] w-full",
+              )}>
+                <Markdown remarkPlugins={[remarkGfm]} className="flex flex-row items-center justify-between">
+                  {initial_message.content}
+                </Markdown>
+                {renderActionButtons()}
+              </ChatBubbleMessage>
+            </ChatBubble>
+            <ChatInput  
                 input={input}
                 handleInputChange={handleInputChange}
                 handleSubmit={onSubmit}

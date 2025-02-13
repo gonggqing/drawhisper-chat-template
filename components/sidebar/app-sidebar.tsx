@@ -23,11 +23,12 @@ import useUser from "@/lib/store/user-store";
 import useCharacter, { Character } from "@/lib/store/character-store";
 import useChat from "@/lib/store/chat-store";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Avatar from "@/components/avatar-wrapper";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { Settings } from "@/components/sidebar/settings";
+import Link from "next/link";
 
 import { defaultCharacter } from "@/lib/character";
 
@@ -36,7 +37,7 @@ export const AppSidebar = () => {
     const [username, setUsername] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
     const { id } = useParams() as { id: string | undefined };
-
+    const router = useRouter();
     const chats = useChat((state) => state.chats);
     const setCurrentChatId = useChat((state) => state.setCurrentChatId);
     const handleDeleteChat = useChat((state) => state.handleDelete);
@@ -46,8 +47,6 @@ export const AppSidebar = () => {
     const getCharacterById = useCharacter((state) => state.getCharacterById);
 
     const [characters, setCharacters] = useState<Character[]>([]);
-
-    const router = useRouter();
 
     const handleCharacterClick = (target_character: Character) => {
         if (currentCharacter?.id !== target_character.id) {
@@ -62,11 +61,6 @@ export const AppSidebar = () => {
         } catch (error) {
             toast.error("Failed to delete character");
         }
-    }
-
-    function handleChangeChat(chatId: string) {
-        setCurrentChatId(chatId);
-        router.push(`/c/${chatId}`);
     }
 
     useEffect(() => {
@@ -101,9 +95,11 @@ export const AppSidebar = () => {
                     </SidebarGroupLabel>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <Button onClick={() => router.push("/")} variant="ghost" className="w-1/2 h-12 font-bold justify-start bg-sidebar-accent rounded-full">
-                                <p>New</p> <Plus size={24} weight="bold" />
-                            </Button>
+                            <Link href="/">
+                                <Button variant="ghost" className="w-1/2 h-12 font-bold justify-start bg-sidebar-accent rounded-full">
+                                    <p>New</p> <Plus size={24} weight="bold" />
+                                </Button>
+                            </Link>
                         </SidebarMenuItem>
                     </SidebarMenu>
                     <SidebarMenu className="max-h-[448px] overflow-y-auto">
@@ -111,29 +107,34 @@ export const AppSidebar = () => {
                             const c = getCharacterById(chat.characterId);
                             return (
                             <SidebarMenuItem key={chatId} className="relative group flex flex-row items-center gap-2 p-2">
-                                <SidebarMenuButton 
-                                    className={cn("h-12 w-full items-center justify-between", 
-                                        chatId === id && "bg-sidebar-accent shadow-inner"
-                                    )}
-                                    onClick={() => handleChangeChat(chatId)}
-                                >
-                                    <Avatar src={c?.avatar || "/image/radien.jpg"} fallback={c?.name.charAt(0) || "A"} />
-                                    <span className="flex flex-row items-center gap-2">
-                                        <span className="text-sm font-medium">
-                                            {c?.name + `:${chat.messages[0].content}`}
-                                        </span>
-                                    </span>
-                                    <div 
-                                        className="transition-all duration-300 hover:opacity-100 opacity-0 hover:bg-red-400 hover:text-white rounded-full h-8 w-8 p-1.5 flex items-center justify-center" 
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteChat(chatId);
-                                        }}
+                                <Link href={`/c/${chatId}`}>
+                                    <SidebarMenuButton 
+                                        className={cn("h-12 w-full items-center justify-between", 
+                                            chatId === id && "bg-sidebar-accent shadow-inner"
+                                        )}
                                     >
-                                        <TrashSimple size={18} weight="fill" />
-                                    </div>
-                                </SidebarMenuButton>
+                                        <Avatar src={c?.avatar || "/image/radien.jpg"} fallback={c?.name.charAt(0) || "A"} />
+                                        <span className="flex flex-row items-center gap-2">
+                                            <span className="text-sm font-medium">
+                                                {c?.name + `:${chat.messages[0].content}`}
+                                            </span>
+                                        </span>
+                                        <div 
+                                            className="transition-all duration-300 hover:opacity-100 opacity-0 hover:bg-red-400 hover:text-white rounded-full h-8 w-8 p-1.5 flex items-center justify-center" 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (chatId === id) {
+                                                    router.push("/");
+                                                }
+                                                handleDeleteChat(chatId);
+                                            }}
+                                        >
+                                            <TrashSimple size={18} weight="fill" />
+                                        </div>
+                                    </SidebarMenuButton>
+                                </Link>
                             </SidebarMenuItem>
+                            
                         )})}
                     </SidebarMenu>
                 </SidebarGroup>

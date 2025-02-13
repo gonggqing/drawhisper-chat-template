@@ -172,8 +172,8 @@ export async function POST(
         })
         console.timeEnd("[INFO] Build LLM chain and get Stream response")
 
-        return LangChainAdapter.toDataStreamResponse(response);
-                            
+        return LangChainAdapter.toDataStreamResponse(response)
+        
     } catch (error) {
         console.log(`[API Chat] Internal server error: ${error}`)
         return NextResponse.json({ error: `Internal server error` }, { status: 500 });

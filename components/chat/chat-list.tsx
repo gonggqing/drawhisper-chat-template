@@ -76,7 +76,7 @@ export function ChatList({ chatId, messages, isLoading, loadingSubmit, play, rel
                                             src={character?.avatar || "/image/radien.jpg"}
                                             fallback={character?.name || "AI"}
                                         />
-                                        <ThinkingBubble className="relative p-2 opacity-95 backdrop-blur-sm bg-accent w-[56px] min-h-[56px]">
+                                        <ThinkingBubble className="relative p-2 bg-transparent backdrop-blur-sm w-[56px] min-h-[56px]">
                                             <WaterBubble className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                                         </ThinkingBubble>
                                     </ChatBubble>

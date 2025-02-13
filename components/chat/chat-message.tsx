@@ -169,7 +169,7 @@ function ChatMessage({ character, message, isLast, isLoading, reload, play }: Ch
   return (
     <motion.div {...MOTION_CONFIG} className="flex flex-col gap-2 whitespace-pre-wrap">
       {message.role === "assistant" && thinkContent && (
-        <ThinkingBubble variant="received" className="ml-12 opacity-95 backdrop-blur-sm ">
+        <ThinkingBubble variant="received" className="ml-12 opacity-95 backdrop-blur-sm text-muted-foreground">
           {renderThinkingProcess()}
         </ThinkingBubble>
       )}
@@ -179,8 +179,8 @@ function ChatMessage({ character, message, isLast, isLoading, reload, play }: Ch
           fallback={message.role === "user" ? "U" : character?.name || "AI"} 
         />
         <ChatBubbleMessage className={cn(
-          message.role === "assistant" && "bg-[color:#ffc2d1]",
-          message.role === "user" && "bg-[color:#bde0fe]",
+          message.role === "assistant" && "bg-[color:#ffc2d1] dark:bg-[color:#ea9ab2] text-accent-foreground",
+          message.role === "user" && "bg-[color:#bde0fe] dark:bg-[color:#788bff] text-accent-foreground",
         )}>
           {renderAttachments()}
           {renderContent()}

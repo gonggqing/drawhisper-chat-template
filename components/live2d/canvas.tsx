@@ -15,7 +15,7 @@ import { CreateLive2DController } from "@/lib/live2d";
 import { ChatClient } from "@/components/chat/chat-client";
 import { VoiceProvider } from "@/context/voice/voice-provider";
 import { VoiceType, useVoice } from "@/context/voice/voice-context";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown, CompassRose } from "@phosphor-icons/react";
 import { createId } from "@paralleldrive/cuid2";
 import { ChatContext } from "@/context/chat/chat-context";
 import { useParams } from "next/navigation";
@@ -67,7 +67,7 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
 
   const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
-      bg_color: theme === "dark" ? "#404048" : "#fffbff",
+      bg_color: theme === "light" ? "#fffbff" : "#404048",
       bg_opacity: 0.8
     }
   });
@@ -80,7 +80,7 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
       height: canvasContainerRef.current.clientHeight,
       view: canvasContainerRef.current,
       backgroundAlpha: 0.8,
-      backgroundColor: theme === "dark" ? "#404048" : "#fffbff",
+      backgroundColor: theme === "light" ? "#fffbff" : "#404048",
       antialias: true,
       resolution: 2
     });
@@ -223,7 +223,7 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
       ...config,
       canvas: {
         ...config.canvas,
-        bg_color: theme === "dark" ? "#404048" : "#fffbff",
+        bg_color: theme === "light" ? "#fffbff" : "#404048",
       }
     })
   }, [theme])
@@ -289,12 +289,13 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
               variant="light_blue"
               size="icon"
               onClick={() => setShowGyroscope(!showGyroscope)}
-              className="absolute bottom-2 right-6 z-10 rounded-full bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-200"
+              className="absolute bottom-2 right-4 z-10 rounded-full bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-200"
             >
               <CaretDown 
-                className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                className={`w-4 h-4 transition-transform duration-200 ${
                   showGyroscope ? 'rotate-180' : ''
                 }`}
+                weight="fill"
               />
             </Button>
 
