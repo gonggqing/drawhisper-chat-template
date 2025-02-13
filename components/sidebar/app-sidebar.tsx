@@ -15,7 +15,6 @@ import {
 import { FinnTheHuman, Info, Plus, TrashSimple } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UserForm } from "@/components/forms/user-form";
 import { useEffect, useState } from "react";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 
@@ -27,6 +26,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/avatar-wrapper";
 import { useParams } from "next/navigation";
+
+import { Settings } from "@/components/sidebar/settings";
 
 import { defaultCharacter } from "@/lib/character";
 
@@ -112,7 +113,7 @@ export const AppSidebar = () => {
                             <SidebarMenuItem key={chatId} className="relative group flex flex-row items-center gap-2 p-2">
                                 <SidebarMenuButton 
                                     className={cn("h-12 w-full items-center justify-between", 
-                                        chatId === id && "bg-[color:#d7e3fc] shadow-inner"
+                                        chatId === id && "bg-sidebar-accent shadow-inner"
                                     )}
                                     onClick={() => handleChangeChat(chatId)}
                                 >
@@ -153,7 +154,7 @@ export const AppSidebar = () => {
                         {characters.map((character) => (
                             <SidebarMenuItem key={character.id} className="relative group flex flex-row items-center gap-2 p-2">
                                 <SidebarMenuButton 
-                                    className={cn("h-12 w-full items-center justify-between", currentCharacter?.id === character.id && "bg-[color:#d7e3fc] shadow-inner")}
+                                    className={cn("h-12 w-full items-center justify-between", currentCharacter?.id === character.id && "bg-sidebar-accent shadow-inner")}
                                     onClick={() => handleCharacterClick(character)}
                                 >
                                     <span className="flex flex-row items-center gap-2">
@@ -179,7 +180,7 @@ export const AppSidebar = () => {
                         <Avatar src={avatar || "/image/radien.jpg"} fallback={username?.charAt(0) || "U"} />
                         <p className="text-sm font-medium">{username || "User"}</p>
                     </div>
-                    <UserForm />
+                    <Settings />
                 </div>
             </SidebarFooter>
         </Sidebar>

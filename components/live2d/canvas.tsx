@@ -4,7 +4,7 @@ import { Application, Ticker, DisplayObject } from "pixi.js";
 import { useEffect, useRef, useState, useContext } from "react";
 import { Live2DModel } from "pixi-live2d-display-lipsyncpatch/cubism4";
 // import { draggable } from "@/lib/tools/dragging";
-import { focus } from "@/lib/tools/tap-focus";
+// import { focus } from "@/lib/tools/tap-focus";
 import { Settings } from "./setting/settings";
 import { createGyroscope } from "@/lib/tools/gyroscope";
 
@@ -21,6 +21,8 @@ import { ChatContext } from "@/context/chat/chat-context";
 import { useParams } from "next/navigation";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "../ui/button";
+import { useTheme } from "next-themes";
 
 const setModelPosition = (
   app: Application,
@@ -58,12 +60,14 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
 
   const [voice, setVoice] = useState<VoiceType | null>(null);
   const { voice: currentVoice, updateVoice } = useVoice();
+  const { theme } = useTheme();
 
   const { chat } = useContext(ChatContext);
   const { id } = useParams() as { id: string | undefined };
+
   const [config, setConfig] = useState<CanvasConfig>({
     canvas: {
-      bg_color: "#fff",
+      bg_color: theme === "dark" ? "#404048" : "#fffbff",
       bg_opacity: 0.8
     }
   });
@@ -76,7 +80,7 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
       height: canvasContainerRef.current.clientHeight,
       view: canvasContainerRef.current,
       backgroundAlpha: 0.8,
-      backgroundColor: "#fff",
+      backgroundColor: theme === "dark" ? "#404048" : "#fffbff",
       antialias: true,
       resolution: 2
     });
@@ -213,6 +217,17 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
     initApp();
   }, []);
 
+  useEffect(() => {
+    if (!app) return;
+    setConfig({
+      ...config,
+      canvas: {
+        ...config.canvas,
+        bg_color: theme === "dark" ? "#404048" : "#fffbff",
+      }
+    })
+  }, [theme])
+
   // Initialize voice
   useEffect(() => {
     async function initVoice() {
@@ -270,16 +285,18 @@ export default function Live2D({ children }: { children: React.ReactNode }) {
             <canvas ref={canvasContainerRef} className="live2d-canvas w-full h-full bg-accent rounded select-none" />
             
             {/* Gyroscope Toggle Button */}
-            <button
+            <Button
+              variant="light_blue"
+              size="icon"
               onClick={() => setShowGyroscope(!showGyroscope)}
-              className="absolute bottom-2 right-6 z-10 p-2 rounded-full bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-200"
+              className="absolute bottom-2 right-6 z-10 rounded-full bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-200"
             >
               <CaretDown 
                 className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
                   showGyroscope ? 'rotate-180' : ''
                 }`}
               />
-            </button>
+            </Button>
 
             {/* Gyroscope Canvas */}
             {showGyroscope && (

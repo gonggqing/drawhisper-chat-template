@@ -61,7 +61,7 @@ export const VoiceButton = () => {
     // Early return for disabled state
     if (!controller) return (
         <Button 
-            variant="ghost" 
+            variant="light_blue" 
             size="icon" 
             disabled 
             className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500"
@@ -74,7 +74,7 @@ export const VoiceButton = () => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button 
-                    variant="ghost" 
+                    variant="light_blue" 
                     size="icon" 
                     disabled={isLoading}
                     className={cn(
@@ -87,7 +87,7 @@ export const VoiceButton = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
                 align="start" 
-                className="w-56 p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded"
+                className="w-56 p-2 bg-accent border border-accent-foreground/10 rounded"
             >
                 <DropdownMenuLabel className="text-base text-muted-foreground">
                     Voices
@@ -114,7 +114,7 @@ export const VoiceButton = () => {
                     <DropdownMenuItem 
                         key={voice.name} 
                         className={cn(
-                            "flex items-center justify-between font-mono bg-[color:#edf2fb] transition-all rounded-md duration-500",
+                            "flex items-center justify-between font-mono bg-accent transition-all rounded-md duration-500",
                             voice.name === currentVoice?.speaker_id && "bg-blue-300"
                         )}
                         onClick={(e) => {
@@ -130,7 +130,7 @@ export const VoiceButton = () => {
                             {voice.name.replace('.wav', '')}
                         </span>
                         <Button 
-                            variant="ghost" 
+                            variant="light_blue" 
                             size="icon" 
                             className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500 flex-shrink-0"
                             onClick={(e) => {

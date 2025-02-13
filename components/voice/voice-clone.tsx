@@ -101,7 +101,7 @@ export const VoiceClone = ({ open, setOpen }: { open: boolean, setOpen: (open: b
                         e.stopPropagation();
                         setOpen(true);
                     }}
-                    variant={"ghost"} size={"icon"} className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500">
+                    variant={"light_blue"} size={"icon"} className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500">
                     <Microphone size={24} weight="fill" />
                 </Button>
             </DialogTrigger>

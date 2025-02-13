@@ -13,6 +13,7 @@ import { Plus } from "@phosphor-icons/react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 import useCharacter from "@/lib/store/character-store";
@@ -84,6 +85,7 @@ export const CharacterSetting = () => {
         setLoading(true);
         try {
             const characterId = character.createCharacter(
+                undefined, // id handled by backend
                 data.name,
                 data.avatar,
                 data.description,

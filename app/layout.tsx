@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { ModelSelect } from "@/components/model/model-select";
 import Live2DWrapper from "@/components/live2d/live-2d-wrapper";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,28 +28,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
           >
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="gap-4 row-start-2 items-center sm:items-start font-[family-name:var(--font-geist-sans)] overflow-hidden">
-                {/* Header */}
-                <div className="w-screen h-14 sticky z-50 top-0 bg-sidebar border-b border-sidebar-border flex items-center justify-start px-2 ">
-                  <SidebarTrigger className="hover:bg-[color:#edf2fb] transition-all rounded-full duration-300" />
-                  <ModelSelect />
-                </div>
-                {/* Main Content */}
-                <div className="w-full h-full items-center justify-start min-h-screen p-4">
-                  <div className="w-full h-full flex justify-start items-start">
-                    <Live2DWrapper>
-                      {children}
-                    </Live2DWrapper>
+           <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            
+           >
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="gap-4 row-start-2 items-center sm:items-start font-[family-name:var(--font-geist-sans)] overflow-hidden">
+                  {/* Header */}
+                  <div className="w-screen h-14 sticky z-50 top-0 bg-sidebar border-b border-sidebar-border flex items-center justify-start px-2 ">
+                    <SidebarTrigger className="hover:bg-[color:#edf2fb] transition-all rounded-full duration-300" />
+                    <ModelSelect />
                   </div>
-                </div>
-            </main>
-          </SidebarProvider>
+                  {/* Main Content */}
+                  <div className="w-full h-full items-center justify-start min-h-screen p-4">
+                    <div className="w-full h-full flex justify-start items-start">
+                      <Live2DWrapper>
+                        {children}
+                      </Live2DWrapper>
+                    </div>
+                  </div>
+              </main>
+            </SidebarProvider>
+          </ThemeProvider>
         </body>
     </html>
   );

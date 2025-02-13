@@ -72,17 +72,17 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
             <div className="flex flex-row gap-2 items-center justify-start">
                 <DropdownMenu open={open} onOpenChange={setOpen}>
                     <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className={cn(
+                    <Button variant="light_blue" size="icon" className={cn(
                         "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#e2eafc] transition-all rounded-full duration-500",
                         open && "rotate-90 bg-[color:#e2eafc]"
                     )}>
                         <CaretRight size={24} weight="bold" />
                     </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-72 max-h-[85dvh] p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded">
+                    <DropdownMenuContent align="start" className="w-72 max-h-[85dvh] p-2 bg-accent border border-accent-foreground/10 rounded">
                         <DropdownMenuGroup>
                             <DropdownMenuLabel className="text-base text-muted-foreground">Canvas</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">
+                            <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-accent">
                                 <div className="flex flex-col gap-2 items-start justify-start">
                                     <p className="text-sm font-mono text-muted-foreground">Alpha</p>
                                     <div className="flex flex-row gap-2 items-center justify-between">
@@ -118,7 +118,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                         transition={{ duration: 0.2 }}
                         key="settings-container"
                     >
-                        <Button variant="ghost" size="icon" 
+                        <Button variant="light_blue" size="icon" 
                             key="color-picker"
                             className={cn(
                                 "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
@@ -139,7 +139,7 @@ export function Settings({ config, setConfig, context }: { config: CanvasConfig,
                     </motion.div>
                 </div>
                 <Button 
-                    variant="ghost" 
+                    variant="light_blue" 
                     size="icon" 
                     className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500"
                     key="expand-settings"

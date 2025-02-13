@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ChangeEvent, useState, useEffect } from "react";
-import { DotsThree } from "@phosphor-icons/react";
+import { UserCircleGear } from "@phosphor-icons/react";
 
 const MAX_FILE_SIZE = 5000000; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -124,8 +124,8 @@ export const UserForm = () => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-300 rounded-full">
-                    <DotsThree size={24} weight="bold" />
+                <Button variant="light_blue" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-300 rounded-full">
+                    <UserCircleGear size={24} weight="fill" />
                 </Button>
             </DialogTrigger>
             <DialogContent>

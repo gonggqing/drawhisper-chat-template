@@ -81,7 +81,7 @@ export function Live2DController({ model }: Live2DControllerProps) {
         <>
             <DropdownMenuGroup>
                 <DropdownMenuLabel className="text-base text-muted-foreground">Character Control</DropdownMenuLabel>
-                <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">
+                <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-accent">
                     <div className="flex flex-col gap-2 items-start justify-start">
                         <p className="text-sm font-mono text-muted-foreground">Scale</p>
                         <div className="flex flex-row gap-2 items-center justify-between">
@@ -99,7 +99,7 @@ export function Live2DController({ model }: Live2DControllerProps) {
                         </div>
                     </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-[color:#edf2fb]">
+                <DropdownMenuItem onClick={(e) => {e.preventDefault()}} className="bg-accent">
                     <div className="flex flex-col gap-2 items-start justify-start">
                         <p className="text-sm font-mono text-muted-foreground">Rotation</p>
                         <div className="flex flex-row gap-2 items-center justify-between">
@@ -117,9 +117,9 @@ export function Live2DController({ model }: Live2DControllerProps) {
                         </div>
                     </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-[color:#edf2fb]">
+                <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-accent">
                     <span className="text-sm font-mono text-muted-foreground">Random Motion</span>
-                    <Button variant="ghost" size="icon" 
+                    <Button variant="light_blue" size="icon" 
                         className={cn(
                             "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
                         )}
@@ -128,9 +128,9 @@ export function Live2DController({ model }: Live2DControllerProps) {
                          <PersonSimpleWalk size={24} weight="fill" />
                     </Button>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-[color:#edf2fb]">
+                <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-row gap-2 items-center justify-between bg-accent">
                     <span className="text-sm font-mono text-muted-foreground">Reset</span>
-                    <Button variant="ghost" size="icon" 
+                    <Button variant="light_blue" size="icon" 
                         className={cn(
                             "h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",
                         )}
@@ -151,7 +151,7 @@ export function Live2DController({ model }: Live2DControllerProps) {
                                             {group.motions.map((motion, index) => (
                                                 <Button
                                                     key={`${group.name}-${index}`}
-                                                    variant="ghost"
+                                                    variant="light_blue"
                                                     size="sm"
                                                     className={cn(
                                                         "h-8 w-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] transition-all rounded duration-500",
@@ -174,11 +174,11 @@ export function Live2DController({ model }: Live2DControllerProps) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="flex flex-col gap-1 items-start justify-start w-full h-36 overflow-y-auto">
                         <DropdownMenuLabel className="text-sm font-mono text-muted-foreground ">Expressions</DropdownMenuLabel>
-                        <div className="flex flex-row gap-2 flex-wrap bg-[color:#edf2fb] ">
+                        <div className="flex flex-row gap-2 flex-wrap bg-accent ">
                             {expressions.map((expression, index) => (
                                 <Button
                                     key={index}
-                                    variant="ghost"
+                                    variant="light_blue"
                                     size="sm"
                                     className={cn(
                                         "h-8 px-2 bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] transition-all rounded-full duration-500",

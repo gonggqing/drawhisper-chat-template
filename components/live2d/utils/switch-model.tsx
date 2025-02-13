@@ -28,7 +28,7 @@ export function SwitchModelButton({ context }: SwitchModelProps) {
 
     if (isLoading) {
         return (
-            <Button variant="ghost" size="icon" disabled className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500">
+            <Button variant="light_blue" size="icon" disabled className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500">
                 <UserSwitch size={24} weight="fill" className="animate-spin" />
             </Button>
         );
@@ -36,7 +36,7 @@ export function SwitchModelButton({ context }: SwitchModelProps) {
 
     if (error) {
         return (
-            <Button variant="ghost" size="icon" disabled className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500">
+            <Button variant="light_blue" size="icon" disabled className="h-9 w-9 bg-[color:#edf2fb] transition-all rounded-full duration-500">
                 <UserSwitch size={24} weight="fill" className="text-destructive" />
             </Button>
         );
@@ -45,18 +45,18 @@ export function SwitchModelButton({ context }: SwitchModelProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#e2eafc] transition-all rounded-full duration-500">
+                <Button variant="light_blue" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#e2eafc] transition-all rounded-full duration-500">
                     <UserSwitch size={24} weight="fill" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 p-2 bg-[color:#edf2fb] border border-[color:#e2eafc] rounded">
+            <DropdownMenuContent align="start" className="w-56 p-2 bg-accent border border-accent-foreground/10 rounded">
                 <DropdownMenuLabel className="text-base text-muted-foreground">Character</DropdownMenuLabel>
                 {files.map((file) => (
                     <DropdownMenuItem
                         key={file.path}
                         className={cn(
                             "flex items-center gap-2 cursor-pointer text-muted-foreground",
-                            current?.path === file.path && "bg-[color:#e2eafc] text-primary"
+                            current?.path === file.path && "bg-accent-foreground/10 text-primary"
                         )}
                         onClick={() => handleSwitch(file)}
                     >

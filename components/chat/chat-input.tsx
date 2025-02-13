@@ -104,7 +104,7 @@ export default function ChatInput({
                   <div className="flex flex-row gap-2">
                     <Button
                         className="shrink-0 rounded-full bg-[color:#e2eafc]"
-                        variant="ghost"
+                        variant="light_blue"
                         size="icon"
                         type="button"
                         disabled
@@ -113,7 +113,7 @@ export default function ChatInput({
                     </Button>
                     <Button
                         className="shrink-0 rounded-full w-9 h-9"
-                        variant="ghost"
+                        variant="light_blue"
                         size="icon"
                         type="submit"
                         onClick={(e) => {
@@ -136,7 +136,7 @@ export default function ChatInput({
                             ? "relative bg-[color:#d7e3fc] hover:bg-[color:#e2eafc]"
                             : ""
                         }`}
-                        variant="ghost"
+                        variant="light_blue"
                         size="icon"
                         type="button"
                         onClick={handleListenClick}
@@ -149,7 +149,7 @@ export default function ChatInput({
                     </Button>
                     <Button
                         className="h-9 w-9 rounded-full bg-[color:#e2eafc] hover:bg-[color:#d7e3fc] text-foreground flex-shrink-0"
-                        variant="ghost"
+                        variant="light_blue"
                         size="icon"
                         type="submit"
                         disabled={
