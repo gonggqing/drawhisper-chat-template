@@ -15,12 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Check, Copy, Play } from "@phosphor-icons/react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
 import AvatarWrapper from "@/components/avatar-wrapper";
 
+import useUser from "@/lib/store/user-store";
 import useCharacter from "@/lib/store/character-store";
 import { cn } from "@/lib/utils";
-
+import { sanitizeMarkdownContent } from "@/lib/tools/trim-content";
 import { useContext } from "react";
 import { Live2DContext } from "@/context/live2d/live2d-context";
 
@@ -107,6 +107,8 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
   const { controller } = useContext(Live2DContext);
   const { voice } = useVoice();
 
+  const user = useUser((state) => state.getUser());
+
   useEffect(() => {
     const currentChat = getChatById(id);
     console.log(`[ChatInfo] currentChat:${currentChat}`);
@@ -157,7 +159,7 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
               return 
           }
 
-          const content = message.content.replace(/<think>[\s\S]*?(?:<\/think>|$)/g, '').trim()
+          const content = sanitizeMarkdownContent(message.content);
           if (content.length === 0) {
             toast.error("No content to generate speech");
             return;
@@ -236,6 +238,7 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
       body: {
         selectedModel: selectedModel,
         character: character ? character : currentCharacter,
+        user: user,
       },
       ...(base64Images && {
         data: {
@@ -304,7 +307,8 @@ export function ChatClient({ initialMessages, id, isMobile }: ChatProps) {
                 "bg-[color:#ffc2d1] w-full",
               )}>
                 <Markdown remarkPlugins={[remarkGfm]} className="flex flex-row items-center justify-between">
-                  {initial_message.content}
+                  
+                  {initial_message.content} 
                 </Markdown>
                 {renderActionButtons()}
               </ChatBubbleMessage>

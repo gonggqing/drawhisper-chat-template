@@ -25,6 +25,7 @@ const userFormSchema = z.object({
     username: z.string().min(1, {
         message: "Username is required",
     }),
+    appellation: z.string().optional(),
     avatar: z.string().optional(),
     info: z.string().optional(),
 });
@@ -43,6 +44,7 @@ export const UserForm = () => {
     const setUser = useUserStore((state) => state.setUser);
     const setAvatar = useUserStore((state) => state.setAvatar);
     const setInfo = useUserStore((state) => state.setInfo);
+    const setAppellation = useUserStore((state) => state.setAppellation);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
@@ -51,16 +53,22 @@ export const UserForm = () => {
         resolver: zodResolver(userFormSchema),
         defaultValues: {
             username: '',
+            appellation: '',
             avatar: '',
             info: '',
         }
     });
+
+    const handleOpenChange = (open: boolean) => {
+        setOpen(open);
+    }
 
     // Initialize form with user data when available
     useEffect(() => {
         if (user) {
             form.reset({
                 username: user.username || '',
+                appellation: user.appellation || '',
                 avatar: user.avatar || '',
                 info: user.info || '',
             });
@@ -89,7 +97,12 @@ export const UserForm = () => {
             if (values.info) {
                 setInfo(values.info);
             }
-            
+
+            if (values.appellation) {
+                setAppellation(values.appellation);
+            }
+
+            setOpen(false);
             toast.success("Profile updated successfully");
         } catch (error) {
             toast.error("Failed to update profile");
@@ -122,9 +135,14 @@ export const UserForm = () => {
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="light_blue" size="icon" className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-300 rounded-full">
+                <Button 
+                    variant="light_blue" 
+                    size="icon" 
+                    className="h-9 w-9 bg-[color:#edf2fb] hover:bg-[color:#d7e3fc] transition-all duration-300 rounded-full"
+                    onClick={() => setOpen(true)}
+                >
                     <UserCircleGear size={24} weight="fill" />
                 </Button>
             </DialogTrigger>
@@ -134,19 +152,34 @@ export const UserForm = () => {
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                        <FormField
-                            control={form.control}
-                            name="username"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Username</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="your username" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <span className="grid grid-cols-2 gap-2">
+                            <FormField
+                                control={form.control}
+                                name="username"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="your username" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="appellation"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Appellation</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="How the character will call you" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </span>
                         <FormField
                             control={form.control}
                             name="avatar"

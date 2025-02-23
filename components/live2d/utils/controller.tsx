@@ -145,7 +145,7 @@ export function Live2DController({ model }: Live2DControllerProps) {
                         <DropdownMenuItem onClick={(e) => e.preventDefault()} className="flex flex-col gap-1 items-start justify-start w-full h-48 overflow-y-auto">
                             <p className="text-sm font-mono text-muted-foreground">Motions</p>
                             {motionGroups.map((group, groupIndex) => (
-                                    <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-[color:#edf2fb]">
+                                    <div onClick={(e) => e.preventDefault()} key={group.name} className="flex flex-col w-full gap-2 bg-accent">
                                         <span className="text-sm font-mono text-muted-foreground capitalize">{group.name}</span>
                                         <div className="flex flex-col gap-2 w-full">
                                             {group.motions.map((motion, index) => (

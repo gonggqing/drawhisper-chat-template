@@ -123,10 +123,8 @@ export const AppSidebar = () => {
                                             className="transition-all duration-300 hover:opacity-100 opacity-0 hover:bg-red-400 hover:text-white rounded-full h-8 w-8 p-1.5 flex items-center justify-center" 
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                if (chatId === id) {
-                                                    router.push("/");
-                                                }
                                                 handleDeleteChat(chatId);
+                                                router.push("/");
                                             }}
                                         >
                                             <TrashSimple size={18} weight="fill" />
